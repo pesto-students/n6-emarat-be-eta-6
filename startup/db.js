@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import Logger from '../lib/logging.js';
 
 export default async () => {
     const CONNECTION_STRING = process.env.MONGO_DB_CONNECTION_STRING;
@@ -9,11 +10,11 @@ export default async () => {
             useUnifiedTopology: true,
             useCreateIndex: true,
         });
-        console.log(`MongoDB Connected: ${conn.connection.host}`);
+        Logger.debug(`MongoDB Connected: ${conn.connection.host}`);
         return conn.connection.getClient();
     }
     catch (error) {
-        console.log(error);
+        Logger.error(`Mongo db connection error, error -> ${error.message}`);
         process.exit(1);
     }
 }
