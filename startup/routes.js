@@ -4,6 +4,8 @@ import auth from '../routes/auth.js';
 // import users from '../routes/users.js';
 // import amenities from '../routes/amenities.js';
 import uploadImage from '../routes/uploadImage.js';
+import httpError from '../middleware/httpError.js';
+import morganMiddleware from '../middleware/morganMiddleware.js';
 
 export default app => {
     app.use(
@@ -16,7 +18,7 @@ export default app => {
     };
 
     app.use(cors(corsOptions));
-    app.use(express.json());
+    app.use(morganMiddleware)
 
     app.use('/', auth);
     app.post('/upload', uploadImage);
@@ -25,8 +27,5 @@ export default app => {
 
     app.use((req, res, next) => res.status(404).send("Not found"));
 
-    app.use((err, req, res, next) => {
-        console.error(err.stack)
-        res.status(500).send('Server Err')
-    });
+    app.use(httpError);
 };
