@@ -6,10 +6,10 @@ import setupCloudinary from './startup/cloudinary.js';
 import routerInit from "./routes/index.js";
 import firebaseAuth from './startup/firebaseAuth.js';
 import Logger from './lib/logging.js';
-// import { createToken } from './config/utils.js';
+// import { createToken } from './lib/utils.js';
 
 firebaseAuth();
-// createToken({});
+// createToken({uid: '9898989977', additionalClaims: {isAdmin: true}});
 setupDb();
 requestConditions(app);
 setupCloudinary();
