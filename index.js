@@ -1,10 +1,10 @@
 import express from 'express';
 const app = express();
-import setupDb from './startup/db.js';
-import requestConditions from './startup/requestConditions.js';
-import setupCloudinary from './startup/cloudinary.js';
-import intializeRoutes from './startup/routes.js';
-import firebaseAuth from './startup/firebaseAuth.js';
+import setupDb from './config/db.js';
+import requestConditions from './config/requestConditions.js';
+import setupCloudinary from './config/cloudinary.js';
+import intializeRoutes from './config/routes.js';
+import firebaseAuth from './config/firebaseAuth.js';
 import Logger from './lib/logging.js';
 // import { createToken } from './lib/utils.js';
 
