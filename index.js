@@ -4,8 +4,11 @@ import setupDb from './startup/db.js';
 import requestConditions from './startup/requestConditions.js';
 import setupCloudinary from './startup/cloudinary.js';
 import routerInit from "./routes/index.js";
+import firebaseAuth from './startup/firebaseAuth.js';
+// import { createToken } from './config/utils.js';
 
-
+firebaseAuth();
+// createToken({});
 setupDb();
 requestConditions(app);
 setupCloudinary();
