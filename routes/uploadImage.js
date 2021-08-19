@@ -17,7 +17,7 @@ export default (app) => {
                 if (result.public_id) {
 
                     // The results in the web browser will be returned inform of plain text formart. We shall use the util that we required at the top of this code to do this.
-                    res.send({ url: result.url })
+                    res.send({ url: result.secure_url })
                 }
             });
         });
