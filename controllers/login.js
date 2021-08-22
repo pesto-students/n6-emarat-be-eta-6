@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 import { verifyToken, addCustomClaims } from "../config/firebaseAuth.js";
-import User from "../models/user.js";
 
 export const postLogin = async (req, res) => {
 	const token = req.body.token;
