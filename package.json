@@ -5,9 +5,9 @@
     "main": "index.js",
     "type": "module",
     "scripts": {
-        "start": "cross-env NODE_ENV=production node index.js",
-        "dev": "cross-env NODE_ENV=development nodemon -r dotenv/config index.js",
-        "debug": "cross-env DEBUG=express:* nodemon index.js"
+        "start": "cross-env NODE_ENV=production node -r dotenv/config index.js dotenv_config_path=config/.env",
+        "dev": "cross-env NODE_ENV=development nodemon -r dotenv/config index.js dotenv_config_path=config/.env",
+        "debug": "cross-env DEBUG=express:* nodemon -r dotenv/config index.js dotenv_config_path=config/.env"
     },
     "keywords": [],
     "author": "",

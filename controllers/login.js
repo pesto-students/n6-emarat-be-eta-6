@@ -1,27 +1,19 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
+import { verifyToken, addCustomClaims } from "../config/firebaseAuth.js";
 import User from "../models/user.js";
 
-export const getLogin = (req, res) =>
-{
-	res.render('guests/login');
-}
+export const postLogin = async (req, res) => {
+	const token = req.body.token;
 
-export const postLogin = async (req, res) =>
-{
-	const user = req.body;
+	if (token) {
+		const decodedToken = await verifyToken(token);
+		const claims = { isAdmin: true };
 
-	const newUser = new User(user);
-
-	try
-	{
-		await newUser.save();
-
-		res.status(201).json(newUser);
+		if (decodedToken) {
+			addCustomClaims(decodedToken.uid, claims);
+			res.json({ status: "success" });
+		}
 	}
-	catch (error)
-	{
-		res.status(409).json({ message: error.message });
-	}
-}
 
-
+	res.json({ status: "invalid token" });
+};
