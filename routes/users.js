@@ -5,13 +5,14 @@ const router = express.Router();
 import { User, joiSchema } from '../models/user.js';
 
 router.post('/', async (req, res) => {
-    const { error } = joiSchema.validate(req.body);
+    const { body = {} } = req;
+    const { error } = joiSchema.validate(body);
     if (error) return res.status(400).send(getResponseErrorFormat(error.details[0].message, '400'));
 
-    let user = await User.findOne({ phone: req.body.phone });
+    let user = await User.findOne({ phone: body.phone });
     if (user) return res.status(400).send(getResponseErrorFormat('Phone already exists', '400'));
 
-    user = new User(req.body);
+    user = new User(body);
     user = await user.save();
     res.send(user);
 });

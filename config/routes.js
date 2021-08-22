@@ -16,6 +16,7 @@ export default app => {
 
     const corsOptions = {
         exposedHeaders: 'Authorization',
+        origin: process.env.CORS_ORIGIN,
     };
 
     app.use(cors(corsOptions));
