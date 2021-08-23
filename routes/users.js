@@ -1,6 +1,6 @@
 // Users Routes
 import express from "express";
-import { getResponseErrorFormat } from "../lib/utils.js";
+import { getResponseErrorFormat, getResponseFormat } from "../lib/utils.js";
 const router = express.Router();
 import { User, joiSchema } from '../models/user.js';
 
@@ -14,7 +14,7 @@ router.post('/', async (req, res) => {
 
     user = new User(body);
     user = await user.save();
-    res.send(user);
+    res.send(getResponseFormat(user));
 });
 
 router.get('/', async (req, res) => {
