@@ -8,7 +8,7 @@ router.get("/", (req, res, next) => {
 	res.send("home");
 });
 
-router.post("/login", postLogin);
+router.post("/login/", postLogin);
 
 router.get("/register", getRegister);
 router.post("/register", postRegister);

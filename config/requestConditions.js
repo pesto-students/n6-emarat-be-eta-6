@@ -16,7 +16,7 @@ export default (app) => {
 		}),
 		express.static("public"), //This is a built-in middleware function in Express. It serves static files and is based on serve-static. The root argument specifies the root directory from which to serve static assets
 
-		cors({ exposedHeaders: "Authorization" }), // CORS is a node.js package for providing a Connect/Express middleware that can be used to enable CORS with various options.
+		cors({ exposedHeaders: "Authorization", origin: true }), // CORS is a node.js package for providing a Connect/Express middleware that can be used to enable CORS with various options.
 
 		cookieParser(appKey),
 

@@ -1,18 +1,25 @@
-import mongoose from "mongoose";
-import { verifyToken, addCustomClaims } from "../config/firebaseAuth.js";
+import { verifyToken, createToken } from "../config/firebaseAuth.js";
+import { CUSTOM_API_CODES } from "../lib/constants.js";
+import { getResponseErrorFormat, getResponseFormat } from "../lib/utils.js";
+import { User } from "../models/user.js";
 
 export const postLogin = async (req, res) => {
-	const token = req.body.token;
+	const {token} = req.body;
+    
+    if(!token) return res.status(400).send(getResponseErrorFormat('Invalid Token', '400'));
 
-	if (token) {
-		const decodedToken = await verifyToken(token);
-		const claims = { isAdmin: true };
+    const decodedToken = await verifyToken(token);
+    if(!decodedToken) 
+        return res.status(500).send(getResponseErrorFormat());
 
-		if (decodedToken) {
-			addCustomClaims(decodedToken.uid, claims);
-			res.json({ status: "success" });
-		}
-	}
+    const { phone_number = '' } = decodedToken;
+    const phone = phone_number.split('+91')[1];
 
-	res.json({ status: "invalid token" });
+    const user = await User.findOne({ phone });
+    if (!user) 
+        return res.status(404).send(getResponseErrorFormat('User with requested phone not found', '400'));
+
+    const { isAdmin = false } = user;
+    const authorizationToken = await createToken({uid: phone, additionalClaims: {isAdmin}});
+    return res.send(getResponseFormat({authorizationToken}, CUSTOM_API_CODES.AUTH_TOKEN));
 };
