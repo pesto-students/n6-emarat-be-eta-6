@@ -4,10 +4,6 @@ import mongoose from "mongoose";
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
-	id: {
-		type: Schema.Types.ObjectId,
-		required: true,
-	},
 	isAdmin: {
 		type: Boolean,
 		default: false,
@@ -27,7 +23,7 @@ const userSchema = new Schema({
 			required: true,
 		},
 	}),
-	mobile: {
+	phone: {
 		type: String,
 		minlength: 10,
 		maxlength: 10,
