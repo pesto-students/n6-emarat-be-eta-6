@@ -21,5 +21,5 @@ export const postLogin = async (req, res) => {
 
     const { isAdmin = false } = user;
     const authorizationToken = await createToken({uid: phone, additionalClaims: {isAdmin}});
-    return res.send(getResponseFormat({authorizationToken}, CUSTOM_API_CODES.AUTH_TOKEN));
+    return res.send(getResponseFormat({authorizationToken}, '', CUSTOM_API_CODES.AUTH_TOKEN));
 };

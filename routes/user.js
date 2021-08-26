@@ -14,7 +14,7 @@ router.post('/', async (req, res) => {
 
     user = new User(body);
     user = await user.save();
-    res.send(getResponseFormat(user));
+    res.send(getResponseFormat(user, 'Success'));
 });
 
 router.get('/', async (req, res) => {
