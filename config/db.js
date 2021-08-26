@@ -9,6 +9,7 @@ export default async () => {
 			useNewUrlParser: true,
 			useUnifiedTopology: true,
 			useCreateIndex: true,
+			useFindAndModify: false,
 		});
 		Logger.debug(`MongoDB Connected: ${conn.connection.host}`);
 		return conn.connection.getClient();
