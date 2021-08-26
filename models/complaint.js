@@ -5,10 +5,6 @@ const Schema = mongoose.Schema;
 var complaintSchema = new Schema({
 	data: [
 		new Schema({
-			id: {
-				type: Schema.Types.ObjectId,
-				required: true,
-			},
 			userId: {
 				type: Schema.Types.ObjectId,
 				required: true,
