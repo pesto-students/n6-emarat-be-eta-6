@@ -2,13 +2,14 @@ import mongoose from "mongoose";
 import Amenity from "../models/amenity.js";
 import validate from "../requests/amenity.js";
 import { sendError } from "../helpers/response.js";
+import { getResponseFormat } from "../lib/utils.js";
 
 export const index = async (req, res) => {
 	try {
 		const amenities = await Amenity.find();
-		res.status(200).json(amenities);
+		res.status(200).json(getResponseFormat(amenities));
 	} catch (error) {
-		res.status(404).json({ message: error.message });
+		sendError(res, error);
 	}
 };
 
@@ -18,7 +19,7 @@ export const store = async (req, res) => {
 
 	try {
 		await newAmenity.save();
-		res.status(201).json(newAmenity);
+		res.status(201).json(getResponseFormat(newAmenity));
 	} catch (error) {
 		sendError(res, error);
 	}
@@ -26,7 +27,7 @@ export const store = async (req, res) => {
 
 export const edit = async (req, res) => {
 	const amenity = await findAmenity(req, res);
-	if (amenity) res.json(amenity);
+	if (amenity) res.json(getResponseFormat(amenity));
 };
 
 export const update = async (req, res, next) => {
@@ -43,7 +44,7 @@ export const update = async (req, res, next) => {
 				new: true, //By default, findByIdAndUpdate() returns the document as it was before update was applied. If you set new: true, findOneAndUpdate() will instead give you the object after update was applied
 			}
 		);
-		res.status(202).json(updatedAmenity);
+		res.status(202).json(getResponseFormat(updatedAmenity));
 	} catch (error) {
 		sendError(res, error);
 	}
@@ -57,7 +58,7 @@ export const destroy = async (req, res) => {
 	try {
 		await Amenity.findByIdAndRemove(amenity._id);
 
-		res.sendStatus(204);
+		res.json(getResponseFormat());
 	} catch (error) {
 		sendError(res, error);
 	}
@@ -75,6 +76,6 @@ const findAmenity = async (req, res) => {
 		}
 	}
 
-	res.status(404).end(`No amenity with id: ${id}`);
+	res.status(404).json(getResponseErrorFormat(`No amenity with id: ${id}`));
 	return false;
 };
