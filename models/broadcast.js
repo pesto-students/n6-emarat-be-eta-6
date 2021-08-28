@@ -1,16 +1,14 @@
+import Joi from "joi";
 import mongoose from "mongoose";
 
 const Schema = mongoose.Schema;
 
-const broadcastSchema = new Schema({
-	id: {
-		type: Schema.Types.ObjectId,
-		required: true,
-	},
-	text: {
+const schema = new Schema({
+	announcement: {
 		type: String,
 		minlength: 2,
 		maxlength: 5000,
+        required: true,
 	},
 	picture: {
 		type: String,
@@ -24,4 +22,9 @@ const broadcastSchema = new Schema({
 	},
 });
 
-export const Broadcast = mongoose.model("Broadcast", broadcastSchema);
+export const Broadcast = mongoose.model("Broadcast", schema);
+
+export const broadcastSchema = Joi.object({
+    announcement: Joi.string().min(2).max(300).required(),
+	picture: Joi.string().min(5).max(200),
+});
