@@ -9,20 +9,18 @@ const userSchema = new Schema({
 		default: false,
 		required: true,
 	},
-	name: new Schema({
-		first: {
-			type: String,
-			minlength: 1,
-			maxlength: 100,
-			required: true,
-		},
-		last: {
-			type: String,
-			minlength: 1,
-			maxlength: 100,
-			required: true,
-		},
-	}),
+    firstName: {
+        type: String,
+        minlength: 1,
+        maxlength: 30,
+        required: true,
+    },
+    lastName: {
+        type: String,
+        minlength: 1,
+        maxlength: 30,
+        required: true,
+    },
 	phone: {
 		type: String,
 		minlength: 10,
@@ -96,12 +94,11 @@ export const User = mongoose.model("User", userSchema);
 
 export const joiSchema = Joi.object({
 	isAdmin: Joi.bool().required(),
-	firstName: Joi.string().max(20).required(),
-	lastName: Joi.string().min(2).max(20).required(),
+	firstName: Joi.string().min(1).max(30).required(),
+	lastName: Joi.string().min(1).max(30).required(),
 	phone: Joi.string()
 		.regex(/^\d{10}$/)
 		.required(),
-	createdAt: Joi.date(),
 	updatedAt: Joi.date(),
 	flat: Joi.string(),
 });
