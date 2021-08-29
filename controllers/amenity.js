@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import Amenity from "../models/amenity.js";
 import validate from "../requests/amenity.js";
-import { sendError } from "../helpers/response.js";
+import { sendError, findItemById } from "../helpers/response.js";
 import { getResponseFormat } from "../lib/utils.js";
 
 export const index = async (req, res) => {
@@ -28,13 +28,13 @@ export const store = async (req, res) => {
 };
 
 export const edit = async (req, res) => {
-	const amenity = await findAmenity(req, res);
+	const amenity = await findItemById(req, res, "amenity", Amenity);
 	if (amenity) res.json(getResponseFormat(amenity));
 };
 
 export const update = async (req, res, next) => {
 	const newAmenity = validate(req, res);
-	const oldAmenity = await findAmenity(req, res);
+	const oldAmenity = await findItemById(req, res, "amenity", Amenity);
 
 	if (!oldAmenity) return;
 
@@ -55,7 +55,7 @@ export const update = async (req, res, next) => {
 };
 
 export const destroy = async (req, res) => {
-	const amenity = await findAmenity(req, res);
+	const amenity = await findItemById(req, res, "amenity", Amenity);
 
 	if (!amenity) return;
 
@@ -66,20 +66,4 @@ export const destroy = async (req, res) => {
 	} catch (error) {
 		sendError(res, error);
 	}
-};
-
-const findAmenity = async (req, res) => {
-	const { id } = req.params;
-
-	if (mongoose.isValidObjectId(id)) {
-		try {
-			const amenity = await Amenity.findById(id);
-			if (amenity) return amenity;
-		} catch (error) {
-			sendError(res, error);
-		}
-	}
-
-	res.status(404).json(getResponseErrorFormat(`No amenity with id: ${id}`));
-	return false;
 };
