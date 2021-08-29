@@ -2,78 +2,98 @@
 import express from "express";
 import { getResponseErrorFormat, getResponseFormat } from "../lib/utils.js";
 const router = express.Router();
-import { User, joiSchema } from '../models/user.js';
+import { User, joiSchema } from "../models/user.js";
+import { sendError, findItemById } from "../helpers/response.js";
+import { joiValidator } from "../helpers/joi.js";
 
-router.post('/', async (req, res) => {
-    const { body = {} } = req;
-    const { error } = joiSchema.validate(body);
-    if (error) return res.status(400).send(getResponseErrorFormat(error.details[0].message, '400'));
+router.get("/", async (req, res) => {
+	if (!req.query.phone) {
+		try {
+			const users = await User.find();
+			return res.json(getResponseFormat(users));
+		} catch (error) {
+			return sendError(res, error);
+		}
+	}
 
-    let user = await User.findOne({ phone: body.phone });
-    if (user) return res.status(400).send(getResponseErrorFormat('Phone already exists', '400'));
+	try {
+		const user = await User.findOne({ phone: req.query.phone });
 
-    user = new User(body);
-    user = await user.save();
-    res.send(getResponseFormat(user, 'Success'));
+		if (!user)
+			return res
+				.status(404)
+				.send(
+					getResponseErrorFormat(
+						"User with requested phone not found",
+						"400"
+					)
+				);
+		res.send(getResponseFormat(user));
+	} catch (error) {
+		return sendError(res, error);
+	}
 });
 
-router.get('/', async (req, res) => {
-    if (!req.query.phone) return res.send(await User.find());
+router.post("/", async (req, res) => {
+	const body = joiValidator(joiSchema, req.body, res);
 
-    const user = await User.findOne({ phone: req.query.phone });
-    if (!user) return res.status(404).send(getResponseErrorFormat('User with requested phone not found', '400'));
-    res.send(getResponseFormat(user));
+	let user = await User.findOne({ phone: body.phone });
+	if (user)
+		return res
+			.status(400)
+			.send(getResponseErrorFormat("Phone already exists", "400"));
+
+	user = new User(body);
+	user = await user.save();
+	res.send(getResponseFormat(user, "Success"));
 });
 
-router.get('/:id', async (req, res) => {
-    const user = await User.findById(req.params.id);
-    if (!user) return res.status(404).send(getResponseErrorFormat('User with requested Id not found', '400'));
+router.get("/:id", async (req, res) => {
+	const user = await User.findById(req.params.id);
+	if (!user)
+		return res
+			.status(404)
+			.send(
+				getResponseErrorFormat(
+					"User with requested Id not found",
+					"400"
+				)
+			);
 
-    res.send(getResponseFormat(user));
+	res.send(getResponseFormat(user));
 });
 
-router.put('/:id', async (req, res) => {
-    let user = await User.findById(req.params.id);
-    if (!user) return res.status(404).send(getResponseErrorFormat('User with requested Id not found', '400'));
+router.put("/:id", async (req, res) => {
+	let user = await User.findById(req.params.id);
+	if (!user)
+		return res
+			.status(404)
+			.send(
+				getResponseErrorFormat(
+					"User with requested Id not found",
+					"400"
+				)
+			);
 
-    const { error } = joiSchema.validate(req.body);
-    if (error) return res.status(400).send(getResponseErrorFormat(error.details[0].message, '400'));
+	const newUser = joiValidator(joiSchema, req.body, res);
+	const updatedUser = await User.findByIdAndUpdate(req.params.id, newUser, {
+		new: true,
+	});
 
-    for (let key in req.body) {
-        user[key] = req.body[key]
-    }
-    user = await user.save();
-    res.send(getResponseFormat(user, 'Updated successfully'));
+	res.send(getResponseFormat(updatedUser, "Updated successfully"));
 });
 
-router.put('/', async (req, res) => {
-    if (!req.query.phone) return res.status(400).send('Send phone in query parameter');
+router.delete("/:id", async (req, res) => {
+	const user = await findItemById(req, res, "user", User);
+	if (!user) return;
 
-    let user = await User.findOne({ phone: req.query.phone });
-    if (!user) return res.status(404).send('User with requested phone not found');
+	try {
+		await User.findByIdAndRemove(user._id);
 
-    const { error } = joiSchema.validate(req.body);
-    if (error) return res.status(400).send(error.details[0].message);
-
-    for (let key in req.body) {
-        user[key] = req.body[key]
-    }
-    user = await user.save();
-    res.send(getResponseFormat(user, 'Updated successfully'));
-});
-
-router.delete('/', async (req, res) => {
-    if (!req.query.phone) return res.send(await User.find());
-
-    const user = await User.findOneAndDelete({ phone: req.query.phone });
-    if (!user) return res.status(404).send('User with requested phone not found');
-    res.send(user);
-});
-
-router.delete('/:id', async (req, res) => {
-    const user = await User.findByIdAndDelete(req.params.id);
-    if (!user) return res.status(404).send('User with requested Id not found');
-    res.send(user);
+		res.json(getResponseFormat(204, "User deleted successfully."));
+	} catch (error) {
+		sendError(res, error);
+	}
 });
 
 export default router;
