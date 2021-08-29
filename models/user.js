@@ -39,7 +39,6 @@ const userSchema = new Schema({
 		type: String,
 		minlength: 1,
 		maxlength: 10,
-		required: true,
 	},
 	transcations: [
 		new Schema({
@@ -93,7 +92,7 @@ const userSchema = new Schema({
 export const User = mongoose.model("User", userSchema);
 
 export const joiSchema = Joi.object({
-	isAdmin: Joi.bool().required(),
+	isAdmin: Joi.bool(),
 	firstName: Joi.string().min(1).max(30).required(),
 	lastName: Joi.string().min(1).max(30).required(),
 	phone: Joi.string()
@@ -101,4 +100,5 @@ export const joiSchema = Joi.object({
 		.required(),
 	updatedAt: Joi.date(),
 	flat: Joi.string(),
+    picture: Joi.string(),
 });

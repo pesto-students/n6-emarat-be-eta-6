@@ -22,14 +22,14 @@ router.get('/', async (req, res) => {
 
     const user = await User.findOne({ phone: req.query.phone });
     if (!user) return res.status(404).send(getResponseErrorFormat('User with requested phone not found', '400'));
-    res.send(user);
+    res.send(getResponseFormat(user));
 });
 
 router.get('/:id', async (req, res) => {
     const user = await User.findById(req.params.id);
     if (!user) return res.status(404).send(getResponseErrorFormat('User with requested Id not found', '400'));
 
-    res.send(user);
+    res.send(getResponseFormat(user));
 });
 
 router.put('/:id', async (req, res) => {
@@ -43,7 +43,7 @@ router.put('/:id', async (req, res) => {
         user[key] = req.body[key]
     }
     user = await user.save();
-    res.send(user);
+    res.send(getResponseFormat(user, 'Updated successfully'));
 });
 
 router.put('/', async (req, res) => {
@@ -59,7 +59,7 @@ router.put('/', async (req, res) => {
         user[key] = req.body[key]
     }
     user = await user.save();
-    res.send(user);
+    res.send(getResponseFormat(user, 'Updated successfully'));
 });
 
 router.delete('/', async (req, res) => {

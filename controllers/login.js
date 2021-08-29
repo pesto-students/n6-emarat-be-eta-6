@@ -22,7 +22,7 @@ export const postLogin = async (req, res) => {
     const _user = user.toObject();
     const { isAdmin = false, firstName, lastName, picture = '', _id: uniqueId } = _user;
     const authorizationToken = await createToken({
-        uid: phone,
+        uid: uniqueId,
         additionalClaims: {
             isAdmin,
             firstName,
