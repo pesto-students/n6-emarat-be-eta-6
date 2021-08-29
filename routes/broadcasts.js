@@ -14,8 +14,8 @@ router.post('/', async (req, res) => {
 });
 
 router.get('/', async (req, res) => {
-    const announcements = await Broadcast.find();
-    return res.send(announcements);
+    const announcements = await Broadcast.find().sort({createdAt: -1});
+    return res.send(getResponseFormat(announcements));
 });
 
 export default router;

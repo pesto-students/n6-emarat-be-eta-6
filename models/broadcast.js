@@ -4,6 +4,12 @@ import mongoose from "mongoose";
 const Schema = mongoose.Schema;
 
 const schema = new Schema({
+    title: {
+        type: String,
+        minlength: 2,
+        maxlength: 100,
+        required: true,
+    },
 	announcement: {
 		type: String,
 		minlength: 2,
@@ -25,6 +31,7 @@ const schema = new Schema({
 export const Broadcast = mongoose.model("Broadcast", schema);
 
 export const broadcastSchema = Joi.object({
-    announcement: Joi.string().min(2).max(300).required(),
+    title: Joi.string().min(2).max(100).required(),
+    announcement: Joi.string().min(2).max(1000).required(),
 	picture: Joi.string().min(5).max(200),
 });
