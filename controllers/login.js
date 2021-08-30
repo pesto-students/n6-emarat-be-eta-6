@@ -20,7 +20,8 @@ export const postLogin = async (req, res) => {
         return res.status(404).send(getResponseErrorFormat('User with requested phone not found', '400'));
 
     const _user = user.toObject();
-    const { isAdmin = false, firstName, lastName, picture = '', _id: uniqueId } = _user;
+    const { isAdmin = false, firstName, lastName, picture = '', _id } = _user;
+    const uniqueId = `${_id}`;
     const authorizationToken = await createToken({
         uid: uniqueId,
         additionalClaims: {

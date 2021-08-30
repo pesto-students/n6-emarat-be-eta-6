@@ -1,5 +1,6 @@
 import { readFile } from "fs/promises";
 import admin from "firebase-admin";
+import Logger from "../lib/logging.js";
 
 export const initFirebaseAuth = async () => {
 	const credentials = JSON.parse(
