@@ -47,15 +47,15 @@ const userSchema = new Schema({
 		default: Date.now,
 		required: true,
 	},
-	transcations: [
-		new Schema({
-			id: {
-				type: Schema.Types.ObjectId,
+	transactions: [
+		{
+			orderId: {
+				type: String,
 				required: true,
+                unique: true,
 			},
-			paidFor: {
-				type: Date,
-			},
+		    fromDate: Date,
+            toDate: Date,
 			amount: {
 				type: Number,
 				max: 99999,
@@ -64,26 +64,23 @@ const userSchema = new Schema({
 			},
 			status: {
 				type: String,
-				enum: ["S", "F"],
+				enum: ['s', 'f'],
 				required: true,
 			},
-			rzpId: {
+			paymentId: {
 				type: String,
 				maxlength: 200,
 				minlength: 5,
 			},
-			createdAt: {
-				type: Date,
-				default: Date.now,
-				required: true,
-			},
-		}),
+			processedAt: Date,
+		},
 	],
 	amenties: [
 		{
 			type: Schema.Types.ObjectId,
 		},
 	],
+    lastPaymentAt: Date,
 });
 
 export const User = mongoose.model("User", userSchema);
