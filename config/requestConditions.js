@@ -8,15 +8,15 @@ export default (app) => {
 
 	app.use(
 		express.json({
-			limit: "30mb", // maximum request body size
+			limit: "30mb",
 		}),
 		express.urlencoded({
-			limit: "30mb", // maximum request body size
-			extended: true, // qs library (when true). The “extended” syntax allows for rich objects and arrays to be encoded into the URL-encoded format, allowing for a JSON-like experience with URL-encoded.
+			limit: "30mb",
+			extended: true,
 		}),
-		express.static("public"), //This is a built-in middleware function in Express. It serves static files and is based on serve-static. The root argument specifies the root directory from which to serve static assets
+		express.static("public"),
 
-		cors({ exposedHeaders: "Authorization", origin: true }), // CORS is a node.js package for providing a Connect/Express middleware that can be used to enable CORS with various options.
+		cors({ exposedHeaders: "Authorization", origin: true }),
 
 		cookieParser(appKey),
 

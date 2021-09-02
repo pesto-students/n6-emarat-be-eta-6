@@ -24,7 +24,6 @@ export const verifyToken = async (token) => {
     return false;
 };
 
-// The Firebase Admin SDK supports defining custom attributes on user accounts. This provides the ability to implement various access control strategies, including role-based access control, in Firebase apps. These custom attributes can give users different levels of access (roles), which are enforced in an application's security rules. https://firebase.google.com/docs/auth/admin/custom-claims
 export const addCustomClaims = async (uid, claims) => {
 	return await admin.auth().setCustomUserClaims(uid, claims);
 };
