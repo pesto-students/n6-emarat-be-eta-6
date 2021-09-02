@@ -68,12 +68,12 @@ export const getToken = async (req, res) => {
 	const token = headerToken || bodyToken;
 
 	if (token) {
-		const decodedToken = await verifyToken(token);
-		if (decodedToken) {
+		const { decodedToken, error } = await verifyToken(token);
+		if (error) {
+			res.status(401).send(getResponseErrorFormat(error));
+		} else {
 			addAuthUserToReq(decodedToken, req);
 			return decodedToken;
-		} else {
-			res.status(500).send(getResponseErrorFormat());
 		}
 	} else {
 		res.status(401).send(getResponseErrorFormat("Unauthorised", "401"));

@@ -4,6 +4,7 @@ import { validateCreate, validateUpdate } from "../requests/complaint.js";
 import { sendError } from "../helpers/response.js";
 import { findOrFail } from "../helpers/db.js";
 import { getResponseFormat } from "../lib/utils.js";
+import redis from "../config/redis.js";
 
 export const index = async (req, res) => {
 	try {
@@ -35,7 +36,8 @@ export const store = async (req, res) => {
 
 	try {
 		await newComplaint.save();
-		await handleCache("store", complaint);
+		req.app.emit("complaints:cache");
+
 		res.status(201).json(
 			getResponseFormat(newComplaint, "Successfully added complaint.")
 		);
@@ -73,7 +75,8 @@ export const update = async (req, res, next) => {
 				new: true, //By default, findByIdAndUpdate() returns the document as it was before update was applied. If you set new: true, findOneAndUpdate() will instead give you the object after update was applied
 			}
 		);
-		await handleCache("update", newComplaint, updatedComplaint);
+		req.app.emit("complaints:cache");
+
 		res.status(202).json(
 			getResponseFormat(
 				updatedComplaint,
@@ -97,14 +100,10 @@ export const destroy = async (req, res) => {
 
 	try {
 		await Complaint.findByIdAndRemove(complaint._id);
-		await handleCache("delete", complaint);
+		req.app.emit("complaints:cache");
 
 		res.json(getResponseFormat(204, "Complaint deleted successfully."));
 	} catch (error) {
 		sendError(res, error);
 	}
-};
-
-const handleCache = async (action, complaint, updatedComplaint) => {
-	// Model.findOne();
 };

@@ -26,7 +26,7 @@ export const postLogin = async (req, res) => {
 	const _user = user.toObject();
 	const { isAdmin = false, firstName, lastName, picture = "", _id } = _user;
 	const uniqueId = `${_id}`;
-	const authorizationToken = await createToken({
+	const { authorizationToken, error } = await createToken({
 		uid: uniqueId,
 		additionalClaims: {
 			isAdmin,
@@ -37,6 +37,9 @@ export const postLogin = async (req, res) => {
 			uniqueId,
 		},
 	});
+
+	if (error) return res.status(401).send(getResponseErrorFormat(error));
+
 	return res.send(
 		getResponseFormat(
 			{ authorizationToken },

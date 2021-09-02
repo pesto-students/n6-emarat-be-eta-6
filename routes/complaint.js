@@ -14,7 +14,7 @@ import {
 
 const router = express.Router();
 
-router.get("/", shouldBeLoggedIn, index);
+router.get("/", index);
 
 router.post("/", shouldBeResident, store);
 

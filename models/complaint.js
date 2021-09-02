@@ -20,7 +20,7 @@ const complaintSchema = new Schema(
 		},
 		status: {
 			type: String,
-			enum: ["raised", "progress", "rejected", "resolved"],
+			enum: ["raised", "progress", "resolved", "rejected"],
 			default: "raised",
 		},
 		comment: {
