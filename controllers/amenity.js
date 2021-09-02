@@ -1,7 +1,8 @@
 import mongoose from "mongoose";
 import Amenity from "../models/amenity.js";
 import validate from "../requests/amenity.js";
-import { sendError, findItemById } from "../helpers/response.js";
+import { sendError } from "../helpers/response.js";
+import { findOrFail } from "../helpers/db.js";
 import { getResponseFormat } from "../lib/utils.js";
 
 export const index = async (req, res) => {
@@ -27,14 +28,14 @@ export const store = async (req, res) => {
 	}
 };
 
-export const edit = async (req, res) => {
-	const amenity = await findItemById(req, res, "amenity", Amenity);
+export const show = async (req, res) => {
+	const amenity = await findOrFail(req.params.id, res, "amenity", Amenity);
 	if (amenity) res.json(getResponseFormat(amenity));
 };
 
 export const update = async (req, res, next) => {
 	const newAmenity = validate(req, res);
-	const oldAmenity = await findItemById(req, res, "amenity", Amenity);
+	const oldAmenity = await findOrFail(req.params.id, res, "amenity", Amenity);
 
 	if (!oldAmenity) return;
 
@@ -55,7 +56,7 @@ export const update = async (req, res, next) => {
 };
 
 export const destroy = async (req, res) => {
-	const amenity = await findItemById(req, res, "amenity", Amenity);
+	const amenity = await findOrFail(req.params.id, res, "amenity", Amenity);
 
 	if (!amenity) return;
 
