@@ -1,7 +1,7 @@
 import express from 'express';
 import shortid from 'shortid';
 import crypto from 'crypto';
-import { calculatePaymentAmount, getResponseFormat } from "../lib/utils.js";
+import { calculatePaymentAmountV2, getResponseErrorFormat, getResponseFormat } from "../lib/utils.js";
 import { User, } from "../models/user.js";
 import { sendError,} from "../helpers/response.js";
 import razorpay from '../config/razorpary.js';
@@ -18,12 +18,12 @@ const amenities = [
 ]
 
 router.get("/", [auth], async (req, res) => {
-    const { phone } = req.user;
+    const { user_id } = req.user;
     try {
-        const user = await User.findOne({ phone });
+        const user = await User.findById(user_id);
         const userObject =  user.toObject();
         const { createdAt, lastPaymentAt } = userObject;
-        const paymentMeta = calculatePaymentAmount({createdAt, lastPaymentAt, amenities});
+        const paymentMeta = calculatePaymentAmountV2({createdAt, lastPaymentAt, amenities});
         
         const resObj = {
             amenities,
@@ -36,25 +36,29 @@ router.get("/", [auth], async (req, res) => {
 });
 
 router.post("/order/", [auth], async (req, res) => {
-    const { phone } = req.user;
+    const { user_id: userId } = req.user;
     try {
-        const user = await User.findOne({ phone });
+        const user = await User.findById(userId);
         const userObject =  user.toObject();
-        const { createdAt, lastPaymentAt, _id } = userObject;
-        const userId = `${_id}`
-        const paymentMeta = calculatePaymentAmount({createdAt, lastPaymentAt, amenities});
-        const { total, fromDate, toDate } = paymentMeta;
-
+        const { createdAt, lastPaymentAt } = userObject;
+        const { pay, paymentMonth } = calculatePaymentAmountV2({createdAt, lastPaymentAt, amenities});
+        
+        if(pay < 1) {
+            return res.status(400).send(getResponseErrorFormat('The amount must be atleast INR 1.00'));
+        }
         const receipt = `${shortid.generate()}`;
 
         const options = {
-            amount: `${total * 100}`,
+            amount: `${pay * 100}`,
             currency: "INR",
             receipt,
-            notes: { receipt, userId, fromDate, toDate },
+            notes: { userId },
         };
 
-        const order = await razorpay.orders.create(options)
+        const order = await razorpay.orders.create(options);
+        const { id: orderId, amount, } = order;
+        user.transactions.push({orderId, amount: +amount / 100, status: 'pending', paidMonth: paymentMonth});
+        await user.save();
         return res.send(getResponseFormat(order));
 
     } catch (err) {
@@ -71,20 +75,28 @@ router.post('/verify/', async (req, res) => {
         const digest = shasum.digest('hex');
 
         if(digest === req.headers['x-razorpay-signature']) {
-            const { id: paymentId, order_id: orderId, notes = {}, status, amount, created_at } = req.body?.payload.payment.entity;
-            const { userId, toDate, fromDate,  } = notes;
+            const { id: paymentId, order_id: orderId, notes = {}, status, created_at } = req.body?.payload.payment.entity;
+            const { userId  } = notes;
 
-            const transaction = { 
-                orderId,
-                amount: amount / 100,
-                fromDate,
-                toDate,
-                status: status === 'captured' ? 's' : 'f',
-                paymentId,
-                processedAt: new Date(created_at * 1000),
-            };
-            await User.findByIdAndUpdate(userId, { $push: { transactions: transaction  }, lastPaymentAt: toDate });
+            const user = await User.findById(userId);
+            if(!user) 
+                return res.status(400).send('Invalid userId');
 
+            const transaction = user.transactions.find(tr => tr.orderId === orderId);
+
+            if(!transaction)
+                return res.status(400).send('Invalid orderId');
+            const { paidMonth } = transaction;
+
+            const isSuccessPayment = status === 'captured';
+
+            transaction.status = isSuccessPayment ? 'success' : 'failed';
+            transaction.processedAt = new Date(created_at * 1000);
+            transaction.paymentId = paymentId;
+
+            if(isSuccessPayment)
+                user.lastPaymentAt = paidMonth;
+            user.save();
         } 
         res.send({status: 'ok'});
 })

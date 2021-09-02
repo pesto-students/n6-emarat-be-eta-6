@@ -54,8 +54,7 @@ const userSchema = new Schema({
 				required: true,
                 unique: true,
 			},
-		    fromDate: Date,
-            toDate: Date,
+		    paidMonth: String,
 			amount: {
 				type: Number,
 				max: 99999,
@@ -64,7 +63,7 @@ const userSchema = new Schema({
 			},
 			status: {
 				type: String,
-				enum: ['s', 'f'],
+				enum: ['pending','success', 'failed'],
 				required: true,
 			},
 			paymentId: {
@@ -72,7 +71,10 @@ const userSchema = new Schema({
 				maxlength: 200,
 				minlength: 5,
 			},
-			processedAt: Date,
+			processedAt: {
+                type: Date,
+                default: Date.now,
+            }
 		},
 	],
 	amenties: [
@@ -80,7 +82,7 @@ const userSchema = new Schema({
 			type: Schema.Types.ObjectId,
 		},
 	],
-    lastPaymentAt: Date,
+    lastPaymentAt: String,
 });
 
 export const User = mongoose.model("User", userSchema);
