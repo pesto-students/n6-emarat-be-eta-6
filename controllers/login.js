@@ -1,27 +1,36 @@
-import mongoose from 'mongoose';
-import User from "../models/user.js";
+import { verifyToken, createToken } from "../config/firebaseAuth.js";
+import { CUSTOM_API_CODES } from "../lib/constants.js";
+import { getResponseErrorFormat, getResponseFormat } from "../lib/utils.js";
+import { User } from "../models/user.js";
 
-export const getLogin = (req, res) =>
-{
-	res.render('guests/login');
-}
+export const postLogin = async (req, res) => {
+	const {token} = req.body;
+    
+    if(!token) return res.status(400).send(getResponseErrorFormat('Invalid Token', '400'));
 
-export const postLogin = async (req, res) =>
-{
-	const user = req.body;
+    const decodedToken = await verifyToken(token);
+    if(!decodedToken) 
+        return res.status(500).send(getResponseErrorFormat());
 
-	const newUser = new User(user);
+    const { phone_number = '' } = decodedToken;
+    const phone = phone_number.split('+91')[1];
 
-	try
-	{
-		await newUser.save();
+    const user = await User.findOne({ phone });
+    if (!user) 
+        return res.status(404).send(getResponseErrorFormat('User with requested phone not found', '400'));
 
-		res.status(201).json(newUser);
-	}
-	catch (error)
-	{
-		res.status(409).json({ message: error.message });
-	}
-}
-
-
+    const _user = user.toObject();
+    const { isAdmin = false, firstName, lastName, picture = '', _id } = _user;
+    const uniqueId = `${_id}`;
+    const authorizationToken = await createToken({
+        uid: uniqueId,
+        additionalClaims: {
+            isAdmin,
+            firstName,
+            lastName,
+            picture,
+            phone,
+            uniqueId,
+        }});
+    return res.send(getResponseFormat({authorizationToken}, '', CUSTOM_API_CODES.AUTH_TOKEN));
+};

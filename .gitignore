@@ -118,3 +118,6 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# Firebase private keys
+config/firebase-service-account-key.json

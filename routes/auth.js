@@ -1,20 +1,12 @@
 import express from "express";
-import { getLogin, postLogin } from "../controllers/login.js";
-import { getRegister, postRegister } from "../controllers/register.js";
+import { postLogin } from "../controllers/login.js";
 
 const router = express.Router();
 
-router.get("/", (req, res, next) =>
-{
+router.get("/", (req, res, next) => {
 	res.send("home");
 });
 
-router.get("/login", getLogin);
-router.post("/login", postLogin);
-
-router.get("/register", getRegister);
-router.post("/register", postRegister);
-
-// router.delete('/:id', deleteUser);
+router.post("/login/", postLogin);
 
 export default router;
