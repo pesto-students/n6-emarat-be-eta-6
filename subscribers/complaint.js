@@ -1,33 +1,9 @@
-export const cacheComplaints = async () => {
-	// redis.set("name", "haris");
+import redisClient from "../config/redis.js";
+import { REDIS } from "../lib/constants.js";
+import { complaintsDashboardData } from "../controllers/dashboard.js";
 
-	// count: {
-	// 	raised: 1,
-	// 	resolved: 1,
-	// 	progress: 1,
-	// 	rejected: 1,
-	// },
-	// byPeriod: [
-	// 	{
-	// 		month: 1;
-	// 		year: 2021;
-	// 		raised: 1,
-	// 		resolved: 1,
-	// 		progress: 1,
-	// 		rejected: 1,
-	// 	}
-	// ]
+export default async () => {
+	const complaints = await complaintsDashboardData();
 
-	// const keys = await redis.keys("*");
-
-	// res.json(keys);
-
-	// redis.set("name", "blah");
-
-	// redis.get("name").then(function (result) {
-	// 	// console.log(result); // Prints "bar"
-	// 	res.json(result);
-	// });
-
-	console.log("complaints cache miss");
+	redisClient.set(REDIS.DASHBOARD_COMPLAINTS, JSON.stringify(complaints));
 };

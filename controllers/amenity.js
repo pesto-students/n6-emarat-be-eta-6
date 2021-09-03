@@ -20,6 +20,8 @@ export const store = async (req, res) => {
 
 	try {
 		await newAmenity.save();
+		req.app.emit("amenities:cache");
+
 		res.status(201).json(
 			getResponseFormat(newAmenity, "Successfully added amenity.")
 		);
@@ -47,6 +49,8 @@ export const update = async (req, res, next) => {
 				new: true, //By default, findByIdAndUpdate() returns the document as it was before update was applied. If you set new: true, findOneAndUpdate() will instead give you the object after update was applied
 			}
 		);
+		req.app.emit("amenities:cache");
+
 		res.status(202).json(
 			getResponseFormat(updatedAmenity, "Amenity updated successfully.")
 		);
@@ -62,6 +66,7 @@ export const destroy = async (req, res) => {
 
 	try {
 		await Amenity.findByIdAndRemove(amenity._id);
+		req.app.emit("amenities:cache");
 
 		res.json(getResponseFormat(204, "Amenity deleted successfully."));
 	} catch (error) {
