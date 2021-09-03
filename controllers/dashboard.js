@@ -7,11 +7,12 @@ import { getResponseFormat } from "../lib/utils.js";
 import { searchArrForObjVal } from "../helpers/array.js";
 import { getOrSetCache } from "../helpers/redis.js";
 import Logger from "../lib/logging.js";
+import { REDIS } from "../lib/constants.js";
 
 export const index = async (req, res) => {
 	try {
 		const complaints = await getOrSetCache(
-			"dashboard:complaints",
+			REDIS.DASHBOARD_COMPLAINTS,
 			complaintsDashboardData
 		);
 
