@@ -7,22 +7,32 @@ import { getResponseFormat } from "../lib/utils.js";
 import { searchArrForObjVal } from "../helpers/array.js";
 import { getOrSetCache } from "../helpers/redis.js";
 import Logger from "../lib/logging.js";
+import { REDIS } from "../lib/constants.js";
 
-export const index = async (req, res) => {
+export const show = async (req, res) => {
 	try {
 		const complaints = await getOrSetCache(
-			"dashboard:complaints",
+			REDIS.DASHBOARD_COMPLAINTS,
 			complaintsDashboardData
 		);
 
-		return res.status(200).json(getResponseFormat(complaints));
+		const amenities = await getOrSetCache(
+			REDIS.DASHBOARD_AMENITIES,
+			mostAvailedAmenities
+		);
+
+		return res
+			.status(200)
+			.json(getResponseFormat({ complaints, amenities }));
+
+		// return res.status(200).json(getResponseFormat(complaints));
 	} catch (error) {
 		Logger.error(error);
 		return sendError(res, error);
 	}
 };
 
-const complaintsDashboardData = async () => {
+export const complaintsDashboardData = async () => {
 	const complaintsCount = await countComplaintsByStatus();
 	const complaintsCountByMonth = await countComplaintsStatusByMonth(12);
 
@@ -30,6 +40,44 @@ const complaintsDashboardData = async () => {
 		count: complaintsCount,
 		byMonth: complaintsCountByMonth,
 	};
+};
+
+export const mostAvailedAmenities = async () => {
+	try {
+		const result = await User.aggregate()
+			// Deconstruct amenities array field
+			.unwind("$amenities")
+			// Group by amenities count
+			.group({
+				_id: "$amenities",
+				count: { $sum: 1 },
+			})
+			// Sort by count
+			.sort({ count: -1 })
+			// Join with amenity collection
+			.lookup({
+				from: "amenities",
+				localField: "_id",
+				foreignField: "_id",
+				as: "amenity",
+			})
+			// Return only specified fields
+			.project({
+				_id: 1,
+				count: 1,
+				amenity: { $arrayElemAt: ["$amenity", 0] }, // return findOne() style single object
+			});
+
+		// Only keeping amenity name and count fields
+		return result.map((val) => {
+			return {
+				name: val.amenity.name,
+				count: val.count,
+			};
+		});
+	} catch (error) {
+		throw new Error(error);
+	}
 };
 
 const countComplaintsStatusByMonth = async (numberOfmonths) => {
@@ -69,6 +117,7 @@ const countComplaintsByStatus = async (fromDate, toDate) => {
 	try {
 		let match = {};
 
+		// If to or form date exists then add to where condition
 		if (fromDate || toDate) {
 			match = {
 				createdAt: {
@@ -80,6 +129,7 @@ const countComplaintsByStatus = async (fromDate, toDate) => {
 
 		const agg = await Complaint.aggregate()
 			.match(match)
+			// Group data based on sum of status field
 			.group({
 				_id: "$status",
 				count: { $sum: 1 },
