@@ -4,28 +4,61 @@ import Amenity from "../models/amenity.js";
 import User from "../models/user.js";
 import { sendError } from "../helpers/response.js";
 import { getResponseFormat } from "../lib/utils.js";
-import redis from "../config/redis.js";
-import { getResponseErrorFormat } from "../lib/utils.js";
+import { searchArrForObjVal } from "../helpers/array.js";
+import { getOrSetCache } from "../helpers/redis.js";
+import Logger from "../lib/logging.js";
 
 export const index = async (req, res) => {
 	try {
-		const complaintsCount = await countComplaintsByStatus();
-		const complaintsCountByMonth = await countComplaintsStatusByMonth();
+		const complaints = await getOrSetCache(
+			"dashboard:complaints",
+			complaintsDashboardData
+		);
 
-		if (complaintsCount.error) {
-			return res
-				.status(401)
-				.send(getResponseErrorFormat(complaintsCount.error));
-		}
-
-		return res.status(200).json(getResponseFormat(complaintsCount.data));
+		return res.status(200).json(getResponseFormat(complaints));
 	} catch (error) {
+		Logger.error(error);
 		return sendError(res, error);
 	}
 };
 
-export const countComplaintsByStatus = async () => {
-	let error = false;
+const complaintsDashboardData = async () => {
+	const complaintsCount = await countComplaintsByStatus();
+	const complaintsCountByMonth = await countComplaintsStatusByMonth(12);
+
+	return {
+		count: complaintsCount,
+		byMonth: complaintsCountByMonth,
+	};
+};
+
+const countComplaintsStatusByMonth = async (numberOfmonths) => {
+	let startOfMonth = dayjs().startOf("month");
+	let endOfMonth = dayjs().endOf("month");
+	let result = [];
+
+	// Generate for last 12 months
+	for (let i = 0; i < numberOfmonths; i++) {
+		const monthData = await countComplaintsByStatus(
+			startOfMonth,
+			endOfMonth
+		);
+
+		result.push({
+			month: startOfMonth.month() + 1,
+			year: startOfMonth.year(),
+			...monthData,
+		});
+
+		startOfMonth = startOfMonth.subtract(1, "month");
+		endOfMonth = endOfMonth.subtract(1, "month");
+	}
+
+	return result;
+};
+
+// fromDate and toDate should be daysjs objects
+const countComplaintsByStatus = async (fromDate, toDate) => {
 	let data = {
 		raised: 0,
 		progress: 0,
@@ -34,72 +67,33 @@ export const countComplaintsByStatus = async () => {
 	};
 
 	try {
-		const agg = await Complaint.aggregate([
-			{ $group: { _id: "$status", count: { $sum: 1 } } },
-		]);
+		let match = {};
+
+		if (fromDate || toDate) {
+			match = {
+				createdAt: {
+					...(fromDate && { $gte: fromDate.toDate() }),
+					...(toDate && { $lt: toDate.toDate() }),
+				},
+			};
+		}
+
+		const agg = await Complaint.aggregate()
+			.match(match)
+			.group({
+				_id: "$status",
+				count: { $sum: 1 },
+			});
 
 		// Putting moongoose agg data into our data variable declared above
 		for (let key in data) {
-			const complaint = agg.find((currentValue) => {
-				return currentValue._id === key;
-			});
+			const complaint = searchArrForObjVal("_id", key, agg);
+
 			if (complaint) data[key] = complaint.count;
 		}
+
+		return data;
 	} catch (error) {
-	} finally {
-		error = error;
-		return { error, data };
+		throw new Error(error);
 	}
 };
-
-export const countComplaintsStatusByMonth = async () => {
-	let startOfMonth = dayjs().startOf("day");
-	let endOfMonth = dayjs().endOf("month");
-	let result = [];
-
-	// Generate for last 12 months
-	for (let i = 0; i <= 12; i++) {
-		startOfMonth = startOfMonth.subtract(1, "month");
-		endOfMonth = endOfMonth.subtract(1, "month");
-
-		console.log(startOfMonth.toISOString());
-		console.log(endOfMonth.toISOString());
-
-		// const agg = await Complaint.find({
-		// 	createdAt: {
-		// 		$gte: startOfMonth,
-		// 		$lt: endOfMonth,
-		// 	},
-		// });
-
-		// result.push({
-		// 	month: 1,
-		// 	year: 2021,
-		// 	raised: 1,
-		// 	resolved: 1,
-		// 	progress: 1,
-		// 	rejected: 1,
-		// });
-
-		// const agg = await Complaint.aggregate([
-		// 	{ $group: {_id: "$status", count: { $sum: 1 } } },
-		// ]);
-	}
-};
-
-// count: {
-// 	raised: 1,
-// 	resolved: 1,
-// 	progress: 1,
-// 	rejected: 1,
-// },
-// byPeriod: [
-// 	{
-// 		month: 1;
-// 		year: 2021;
-// 		raised: 1,
-// 		resolved: 1,
-// 		progress: 1,
-// 		rejected: 1,
-// 	}
-// ]
