@@ -2,10 +2,11 @@ import express from 'express';
 import shortid from 'shortid';
 import crypto from 'crypto';
 import { calculatePaymentAmountV2, getResponseErrorFormat, getResponseFormat } from "../lib/utils.js";
-import { User, } from "../models/user.js";
+import User from "../models/user.js";
 import { sendError,} from "../helpers/response.js";
 import razorpay from '../config/razorpary.js';
-import auth from '../middleware/auth.js';
+import userAuth from '../middleware/auth/user.js';
+import resident from '../middleware/auth/resident.js';
 
 const router = express.Router();
 
@@ -17,7 +18,7 @@ const amenities = [
     {name: 'laundry', fee: 400},
 ]
 
-router.get("/", [auth], async (req, res) => {
+router.get("/", [userAuth, resident], async (req, res) => {
     const { user_id } = req.user;
     try {
         const user = await User.findById(user_id);
@@ -35,7 +36,7 @@ router.get("/", [auth], async (req, res) => {
     }
 });
 
-router.post("/order/", [auth], async (req, res) => {
+router.post("/order/", [userAuth, resident], async (req, res) => {
     const { user_id: userId } = req.user;
     try {
         const user = await User.findById(userId);

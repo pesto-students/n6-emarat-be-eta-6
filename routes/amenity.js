@@ -1,5 +1,5 @@
 import express from "express";
-import { index, store, edit, update, destroy } from "../controllers/amenity.js";
+import { index, store, show, update, destroy } from "../controllers/amenity.js";
 
 const router = express.Router();
 
@@ -7,8 +7,7 @@ router.get("/", index);
 
 router.post("/", store);
 
-router.get("/:id/edit", edit);
-
+router.get("/:id", show);
 router.put("/:id", update);
 router.delete("/:id", destroy);
 

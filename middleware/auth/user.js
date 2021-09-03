@@ -1,5 +1,5 @@
-import { verifyToken } from "../config/firebaseAuth.js";
-import { getResponseErrorFormat } from "../lib/utils.js";
+import { verifyToken } from "../../config/firebaseAuth.js";
+import { getResponseErrorFormat } from "../../lib/utils.js";
 
 export default async function (req, res, next) {
     let token = req.headers.authorization;
@@ -8,7 +8,10 @@ export default async function (req, res, next) {
 
     try {
         const decodedToken = await verifyToken(token);
-        req.user = decodedToken;
+        req.user = {
+            id: decodedToken.uniqueId,
+            isAdmin: decodedToken.isAdmin,
+        };
         next();
     } catch (ex) {
         res.status(400).send(getResponseErrorFormat('Invalid Token', 400));
