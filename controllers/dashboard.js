@@ -7,7 +7,7 @@ import { getResponseFormat } from "../lib/utils.js";
 import { searchArrForObjVal } from "../helpers/array.js";
 import { getOrSetCache } from "../helpers/redis.js";
 import Logger from "../lib/logging.js";
-import { REDIS } from "../lib/constants.js";
+import { MONTHS_SHORT, REDIS } from "../lib/constants.js";
 
 export const show = async (req, res) => {
 	try {
@@ -92,8 +92,10 @@ const countComplaintsStatusByMonth = async (numberOfmonths) => {
 			endOfMonth
 		);
 
+        const month = startOfMonth.month()
 		result.push({
-			month: startOfMonth.month() + 1,
+			month,
+            monthName: MONTHS_SHORT[month],
 			year: startOfMonth.year(),
 			...monthData,
 		});

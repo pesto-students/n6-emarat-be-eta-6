@@ -19,9 +19,9 @@ const amenities = [
 ]
 
 router.get("/", [userAuth, resident], async (req, res) => {
-    const { user_id } = req.user;
+    const { id: userId } = req.user;
     try {
-        const user = await User.findById(user_id);
+        const user = await User.findById(userId);
         const userObject =  user.toObject();
         const { createdAt, lastPaymentAt } = userObject;
         const paymentMeta = calculatePaymentAmountV2({createdAt, lastPaymentAt, amenities});
@@ -37,7 +37,7 @@ router.get("/", [userAuth, resident], async (req, res) => {
 });
 
 router.post("/order/", [userAuth, resident], async (req, res) => {
-    const { user_id: userId } = req.user;
+    const { id: userId } = req.user;
     try {
         const user = await User.findById(userId);
         const userObject =  user.toObject();
