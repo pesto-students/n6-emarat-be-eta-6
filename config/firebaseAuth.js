@@ -15,32 +15,12 @@ export const initFirebaseAuth = async () => {
 };
 
 // Return decoded token if token valid, otherwise return false
-export const verifyToken = async (token) => {
-	const result = { decodedToken: "", error: false };
-
-	try {
-		result.decodedToken = await admin.auth().verifyIdToken(token);
-	} catch (error) {
-		result.error = error.message;
-	} finally {
-		return result;
-	}
-};
+export const verifyToken = async (token) =>
+	await admin.auth().verifyIdToken(token);
 
 export const addCustomClaims = async (uid, claims) => {
 	return await admin.auth().setCustomUserClaims(uid, claims);
 };
 
-export const createToken = async ({ uid, additionalClaims = {} }) => {
-	const result = { token: "", error: false };
-
-	try {
-		result.token = await admin
-			.auth()
-			.createCustomToken(uid, additionalClaims);
-	} catch (error) {
-		result.error = error.message;
-	} finally {
-		return result;
-	}
-};
+export const createToken = async ({ uid, additionalClaims = {} }) =>
+	await admin.auth().createCustomToken(uid, additionalClaims);
