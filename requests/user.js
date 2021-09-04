@@ -11,6 +11,7 @@ const schema = Joi.object({
 		Joi.string().min(5).max(200),
 		Joi.string().valid("").strip(),
 	]),
+    amenities: Joi.array().items(Joi.string()),
 });
 
 export default (req, res) => joiValidator(schema, req.body, res);

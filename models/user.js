@@ -76,7 +76,7 @@ const userSchema = new Schema({
 		required: true,
 	},
 	transactions: [transactionSchema],
-	amenties: [
+	amenities: [
 		{
 			type: Schema.Types.ObjectId,
 			required: true,
