@@ -1,15 +1,19 @@
-import { createToken } from "../config/firebaseAuth.js";
+import { createToken, verifyToken } from "../config/firebaseAuth.js";
 import { CUSTOM_API_CODES } from "../lib/constants.js";
 import { getResponseErrorFormat, getResponseFormat } from "../lib/utils.js";
 import User from "../models/user.js";
-import { getToken } from "../middleware/auth.js";
 
 export const postLogin = async (req, res) => {
-	const token = await getToken(req, res);
+    const {token} = req.body;
+    
+    if(!token) return res.status(400).send(getResponseErrorFormat('Invalid Token', '400'));
 
-	if (!token) return;
+    const decodedToken = await verifyToken(token);
+    if(!decodedToken) 
+        return res.status(500).send(getResponseErrorFormat());
 
-	const { phone_number = "" } = token;
+    const { phone_number = '' } = decodedToken;
+
 	const phone = phone_number.split("+91")[1];
 
 	const user = await User.findOne({ phone });

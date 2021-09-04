@@ -1,9 +1,9 @@
 import express from "express";
 import { show } from "../controllers/dashboard.js";
-import { shouldBeAdmin } from "../middleware/auth.js";
+import admin from "../middleware/auth/admin.js";
 
 const router = express.Router();
 
-router.get("/", shouldBeAdmin, show);
+router.get("/", admin, show);
 
 export default router;

@@ -6,20 +6,17 @@ import {
 	update,
 	destroy,
 } from "../controllers/complaint.js";
-import {
-	shouldBeLoggedIn,
-	shouldBeResident,
-	shouldBeAdmin,
-} from "../middleware/auth.js";
+import admin from "../middleware/auth/admin.js";
+import resident from "../middleware/auth/resident.js";
 
 const router = express.Router();
 
 router.get("/", index);
 
-router.post("/", shouldBeResident, store);
+router.post("/", resident, store);
 
-router.get("/:id", shouldBeLoggedIn, show);
-router.put("/:id", shouldBeAdmin, update);
-router.delete("/:id", shouldBeAdmin, destroy);
+router.get("/:id", show);
+router.put("/:id", admin, update);
+router.delete("/:id", admin, destroy);
 
 export default router;
