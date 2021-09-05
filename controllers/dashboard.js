@@ -1,6 +1,5 @@
 import dayjs from "dayjs";
 import Complaint from "../models/complaint.js";
-import Amenity from "../models/amenity.js";
 import User from "../models/user.js";
 import { sendError } from "../helpers/response.js";
 import { getResponseFormat } from "../lib/utils.js";
@@ -44,7 +43,7 @@ export const complaintsDashboardData = async () => {
 
 export const mostAvailedAmenities = async () => {
 	try {
-		const result = await User.aggregate()
+		return await User.aggregate()
 			// Deconstruct amenities array field
 			.unwind("$amenities")
 			// Group by amenities count
@@ -63,18 +62,10 @@ export const mostAvailedAmenities = async () => {
 			})
 			// Return only specified fields
 			.project({
-				_id: 1,
+				name: { $arrayElemAt: ["$amenity.name", 0] }, // return single value, amenity name
 				count: 1,
-				amenity: { $arrayElemAt: ["$amenity", 0] }, // return findOne() style single object
-			});
-
-		// Only keeping amenity name and count fields
-		return result.map((val) => {
-			return {
-				name: val.amenity.name,
-				count: val.count,
-			};
-		});
+			})
+			.match({ name: { $ne: null } });
 	} catch (error) {
 		throw new Error(error);
 	}
@@ -92,10 +83,10 @@ const countComplaintsStatusByMonth = async (numberOfmonths) => {
 			endOfMonth
 		);
 
-        const month = startOfMonth.month()
+		const month = startOfMonth.month();
 		result.push({
 			month,
-            monthName: MONTHS_SHORT[month],
+			monthName: MONTHS_SHORT[month],
 			year: startOfMonth.year(),
 			...monthData,
 		});
