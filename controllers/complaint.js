@@ -8,7 +8,46 @@ import redis from "../config/redis.js";
 
 export const index = async (req, res) => {
 	try {
-		const complaints = await Complaint.find();
+		const complaints = await Complaint.aggregate()
+			.lookup({
+				from: "amenities",
+				localField: "amenityId",
+				foreignField: "_id",
+				as: "amenity",
+			})
+			.lookup({
+				from: "users",
+				localField: "userId",
+				foreignField: "_id",
+				as: "user",
+			})
+			.project({
+				status: 1,
+				description: 1,
+				createdAt: 1,
+				amenityId: 1,
+				amenity: { $arrayElemAt: ["$amenity", 0] },
+				user: {
+					$let: {
+						vars: {
+							firstUser: {
+								$arrayElemAt: ["$user", 0],
+							},
+						},
+						in: {
+							name: {
+								$concat: [
+									"$$firstUser.firstName",
+									" ",
+									"$$firstUser.lastName",
+								],
+							},
+							picture: "$$firstUser.picture",
+							email: "$$firstUser.flat",
+						},
+					},
+				},
+			});
 		res.status(200).json(getResponseFormat(complaints));
 	} catch (error) {
 		sendError(res, error);
