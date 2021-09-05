@@ -20,7 +20,7 @@ export default (app) => {
 	app.use("/api/payments", payments);
 	app.use("/api/dashboard", [userAuth, admin], dashboard);
 	app.use("/api/complaints", userAuth, complaint);
-    app.use("/api/transactions", userAuth, transactions);
+	app.use("/api/transactions", userAuth, transactions);
 
 	app.use((req, res, next) => res.status(404).send("Not found"));
 	app.use(httpError);

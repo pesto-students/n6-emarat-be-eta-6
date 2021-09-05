@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Complaint from "../models/complaint.js";
 import Amenity from "../models/amenity.js";
 import { validateCreate, validateUpdate } from "../requests/complaint.js";
@@ -8,7 +9,17 @@ import redis from "../config/redis.js";
 
 export const index = async (req, res) => {
 	try {
+		let match = {};
+
+		// If is not admin then only show the user's complaints
+		if (!req.authUser.isAdmin) {
+			match = {
+				userId: new mongoose.Types.ObjectId(req.authUser.id),
+			};
+		}
+
 		const complaints = await Complaint.aggregate()
+			.match(match)
 			.lookup({
 				from: "amenities",
 				localField: "amenityId",
@@ -25,29 +36,21 @@ export const index = async (req, res) => {
 				status: 1,
 				description: 1,
 				createdAt: 1,
-				amenityId: 1,
-				amenity: { $arrayElemAt: ["$amenity", 0] },
-				user: {
-					$let: {
-						vars: {
-							firstUser: {
-								$arrayElemAt: ["$user", 0],
-							},
-						},
-						in: {
-							name: {
-								$concat: [
-									"$$firstUser.firstName",
-									" ",
-									"$$firstUser.lastName",
-								],
-							},
-							picture: "$$firstUser.picture",
-							email: "$$firstUser.flat",
-						},
-					},
+				comment: 1,
+				userName: {
+					$concat: [
+						{ $arrayElemAt: ["$user.firstName", 0] },
+						" ",
+						{ $arrayElemAt: ["$user.lastName", 0] },
+					],
 				},
+				userPhone: { $arrayElemAt: ["$user.phone", 0] },
+				userFlat: { $arrayElemAt: ["$user.flat", 0] },
+				amenityName: { $arrayElemAt: ["$amenity.name", 0] },
+				amenityFee: { $arrayElemAt: ["$amenity.fee", 0] },
+				amenityIcon: { $arrayElemAt: ["$amenity.icon", 0] },
 			});
+
 		res.status(200).json(getResponseFormat(complaints));
 	} catch (error) {
 		sendError(res, error);
@@ -56,6 +59,7 @@ export const index = async (req, res) => {
 
 export const store = async (req, res) => {
 	const complaint = validateCreate(req, res);
+	if (!complaint) return;
 
 	// Add auth user as complaint userId
 	complaint.userId = req.authUser.id;
