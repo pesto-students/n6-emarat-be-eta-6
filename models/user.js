@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import amenity from "./amenity.js";
 
 const Schema = mongoose.Schema;
 
@@ -80,6 +81,7 @@ const userSchema = new Schema({
 		{
 			type: Schema.Types.ObjectId,
 			required: true,
+            ref: amenity
 		},
 	],
     lastPaymentAt: String,

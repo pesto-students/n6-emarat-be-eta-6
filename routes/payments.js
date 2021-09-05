@@ -10,20 +10,12 @@ import resident from '../middleware/auth/resident.js';
 
 const router = express.Router();
 
-const amenities = [
-    {name: 'gym', fee: 400},
-    {name: 'wifi', fee: 800},
-    {name: 'swimming', fee: 900},
-    {name: 'yoga', fee: 500},
-    {name: 'laundry', fee: 400},
-]
-
 router.get("/", [userAuth, resident], async (req, res) => {
     const { id: userId } = req.user;
     try {
-        const user = await User.findById(userId);
+        const user = await User.findById(userId).populate('amenities');
         const userObject =  user.toObject();
-        const { createdAt, lastPaymentAt } = userObject;
+        const { createdAt, lastPaymentAt, amenities = [] } = userObject;
         const paymentMeta = calculatePaymentAmountV2({createdAt, lastPaymentAt, amenities});
         
         const resObj = {
@@ -39,9 +31,9 @@ router.get("/", [userAuth, resident], async (req, res) => {
 router.post("/order/", [userAuth, resident], async (req, res) => {
     const { id: userId } = req.user;
     try {
-        const user = await User.findById(userId);
+        const user = await User.findById(userId).populate('amenities');;
         const userObject =  user.toObject();
-        const { createdAt, lastPaymentAt } = userObject;
+        const { createdAt, lastPaymentAt, amenities = [] } = userObject;
         const { pay, paymentMonth } = calculatePaymentAmountV2({createdAt, lastPaymentAt, amenities});
         
         if(pay < 1) {
