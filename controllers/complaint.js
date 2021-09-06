@@ -31,16 +31,16 @@ export const index = async (req, res) => {
 				comment: 1,
 				userName: {
 					$concat: [
-						{ $arrayElemAt: ["$user.firstName", 0] },
+						{ $first: "$user.firstName" },
 						" ",
-						{ $arrayElemAt: ["$user.lastName", 0] },
+						{ $first: "$user.lastName" },
 					],
 				},
-				userPhone: { $arrayElemAt: ["$user.phone", 0] },
-				userFlat: { $arrayElemAt: ["$user.flat", 0] },
-				amenityName: { $arrayElemAt: ["$amenity.name", 0] },
-				amenityFee: { $arrayElemAt: ["$amenity.fee", 0] },
-				amenityIcon: { $arrayElemAt: ["$amenity.icon", 0] },
+				userPhone: { $first: "$user.phone" },
+				userFlat: { $first: "$user.flat" },
+				amenityName: { $first: "$amenity.name" },
+				amenityFee: { $first: "$amenity.fee" },
+				amenityIcon: { $first: "$amenity.icon" },
 			})
 			.sort({ updatedAt: -1 });
 

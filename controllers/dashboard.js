@@ -60,7 +60,7 @@ export const mostAvailedAmenities = async () => {
 			})
 			// Return only specified fields
 			.project({
-				name: { $arrayElemAt: ["$amenity.name", 0] }, // return single value, amenity name
+				name: { $first: "$amenity.name" }, // return single value, amenity name
 				count: 1,
 			})
 			// Filters to pass only the documents where the value of the field is not equal null.
