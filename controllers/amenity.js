@@ -1,13 +1,34 @@
 import mongoose from "mongoose";
 import Amenity from "../models/amenity.js";
+import User from "../models/user.js";
 import validate from "../requests/amenity.js";
 import { sendError } from "../helpers/response.js";
-import { findOrFail } from "../helpers/db.js";
+import { findOrFail, filterIfUser } from "../helpers/db.js";
 import { getResponseFormat } from "../lib/utils.js";
 
 export const index = async (req, res) => {
 	try {
-		const amenities = await Amenity.find();
+		let amenities;
+		if (req.authUser.isAdmin) {
+			amenities = await Amenity.find().sort({ updatedAt: -1 });
+		} else {
+			amenities = await User.aggregate()
+				.match(filterIfUser(req, "_id"))
+				// Join with amenity collection
+				.lookup({
+					from: "amenities",
+					localField: "amenities",
+					foreignField: "_id",
+					as: "amenities",
+				})
+				// Deconstruct amenities array field
+				.unwind("$amenities")
+				// Make amenities as the top level key
+				.replaceRoot("$amenities")
+				// Sort amenities by name, but since amenities is we can directly write write name (instead of amenities.name)
+				.sort({ name: 1 });
+		}
+
 		res.status(200).json(getResponseFormat(amenities));
 	} catch (error) {
 		sendError(res, error);
