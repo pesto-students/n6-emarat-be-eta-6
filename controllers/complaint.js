@@ -3,23 +3,14 @@ import Complaint from "../models/complaint.js";
 import Amenity from "../models/amenity.js";
 import { validateCreate, validateUpdate } from "../requests/complaint.js";
 import { sendError } from "../helpers/response.js";
-import { findOrFail } from "../helpers/db.js";
+import { findOrFail, filterIfUser } from "../helpers/db.js";
 import { getResponseFormat } from "../lib/utils.js";
 import redis from "../config/redis.js";
 
 export const index = async (req, res) => {
 	try {
-		let match = {};
-
-		// If is not admin then only show the user's complaints
-		if (!req.authUser.isAdmin) {
-			match = {
-				userId: new mongoose.Types.ObjectId(req.authUser.id),
-			};
-		}
-
 		const complaints = await Complaint.aggregate()
-			.match(match)
+			.match(filterIfUser(req))
 			.lookup({
 				from: "amenities",
 				localField: "amenityId",
@@ -36,6 +27,7 @@ export const index = async (req, res) => {
 				status: 1,
 				description: 1,
 				createdAt: 1,
+				updatedAt: 1,
 				comment: 1,
 				userName: {
 					$concat: [
@@ -49,7 +41,8 @@ export const index = async (req, res) => {
 				amenityName: { $arrayElemAt: ["$amenity.name", 0] },
 				amenityFee: { $arrayElemAt: ["$amenity.fee", 0] },
 				amenityIcon: { $arrayElemAt: ["$amenity.icon", 0] },
-			});
+			})
+			.sort({ updatedAt: -1 });
 
 		res.status(200).json(getResponseFormat(complaints));
 	} catch (error) {

@@ -23,8 +23,6 @@ export const show = async (req, res) => {
 		return res
 			.status(200)
 			.json(getResponseFormat({ complaints, amenities }));
-
-		// return res.status(200).json(getResponseFormat(complaints));
 	} catch (error) {
 		Logger.error(error);
 		return sendError(res, error);
@@ -65,6 +63,7 @@ export const mostAvailedAmenities = async () => {
 				name: { $arrayElemAt: ["$amenity.name", 0] }, // return single value, amenity name
 				count: 1,
 			})
+			// Filters to pass only the documents where the value of the field is not equal null.
 			.match({ name: { $ne: null } });
 	} catch (error) {
 		throw new Error(error);
