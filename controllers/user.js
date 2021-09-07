@@ -3,11 +3,12 @@ import User from "../models/user.js";
 import { sendError } from "../helpers/response.js";
 import { findOrFail } from "../helpers/db.js";
 import validate from "../requests/user.js";
+import { filterForUser } from "../helpers/db.js";
 
 export const index = async (req, res) => {
 	if (!req.query.phone) {
 		try {
-			const users = await User.find();
+			const users = await User.find().sort({ updatedAt: -1 });
 			return res.json(getResponseFormat(users));
 		} catch (error) {
 			return sendError(res, error);
@@ -110,6 +111,27 @@ export const destroy = async (req, res) => {
 		req.app.emit("amenities:cache");
 
 		res.json(getResponseFormat(204, "User deleted successfully."));
+	} catch (error) {
+		sendError(res, error);
+	}
+};
+
+export const userAmenities = async (req, res) => {
+	try {
+		let amenities = await User.aggregate()
+			.match(filterForUser(req, "_id"))
+			// .unwind("$amenities")
+			.project("amenities");
+
+		amenities =
+			amenities &&
+			Array.isArray(amenities) &&
+			amenities.length > 0 &&
+			amenities[0].amenities
+				? amenities[0].amenities
+				: [];
+
+		res.status(200).json(getResponseFormat(amenities));
 	} catch (error) {
 		sendError(res, error);
 	}
