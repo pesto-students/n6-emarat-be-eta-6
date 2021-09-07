@@ -3,7 +3,6 @@ import User from "../models/user.js";
 import { sendError } from "../helpers/response.js";
 import { findOrFail } from "../helpers/db.js";
 import validate from "../requests/user.js";
-import { filterForUser } from "../helpers/db.js";
 
 export const index = async (req, res) => {
 	if (!req.query.phone) {
@@ -73,32 +72,8 @@ export const show = async (req, res) => {
 	}
 };
 
-export const update = async (req, res, userId) => {
-	const id = userId || req.params.id;
-
-	try {
-		let user = await User.findById(id);
-		if (!user) {
-			return res
-				.status(404)
-				.send(
-					getResponseErrorFormat(
-						"User with requested Id not found",
-						"400"
-					)
-				);
-		}
-
-		const newUser = validate(req, res);
-		const updatedUser = await User.findByIdAndUpdate(id, newUser, {
-			new: true,
-		});
-		req.app.emit("amenities:cache");
-
-		res.send(getResponseFormat(updatedUser, "Updated successfully"));
-	} catch (error) {
-		sendError(res, error);
-	}
+export const update = async (req, res) => {
+	return await updateUser(req, res);
 };
 
 export const destroy = async (req, res) => {
@@ -153,6 +128,34 @@ export const currentUserProfile = async (req, res) => {
 	}
 };
 
+const updateUser = async (req, res, userId) => {
+	const id = userId || req.params.id;
+
+	try {
+		let user = await User.findById(id);
+		if (!user) {
+			return res
+				.status(404)
+				.send(
+					getResponseErrorFormat(
+						"User with requested Id not found",
+						"400"
+					)
+				);
+		}
+
+		const newUser = validate(req, res);
+		const updatedUser = await User.findByIdAndUpdate(id, newUser, {
+			new: true,
+		});
+		req.app.emit("amenities:cache");
+
+		res.send(getResponseFormat(updatedUser, "Updated successfully"));
+	} catch (error) {
+		sendError(res, error);
+	}
+};
+
 export const updateCurrentUserProfile = async (req, res) => {
-	return await update(req, res, req.authUser.id);
+	return await updateUser(req, res, req.authUser.id);
 };
