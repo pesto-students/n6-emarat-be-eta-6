@@ -5,7 +5,9 @@ import {
 	show,
 	update,
 	destroy,
-	userAmenities,
+	currentUserAmenities,
+	currentUserProfile,
+	updateCurrentUserProfile,
 } from "../controllers/user.js";
 import admin from "../middleware/auth/admin.js";
 import resident from "../middleware/auth/resident.js";
@@ -14,11 +16,14 @@ const router = express.Router();
 
 router.get("/", index);
 
-router.get("/current/amenities", resident, userAmenities);
+router.get("/current/amenities", resident, currentUserAmenities);
+
+router.get("/current/profile", resident, currentUserProfile);
+router.put("/current/profile", resident, updateCurrentUserProfile);
 
 router.post("/", admin, store);
 
-router.get("/:id", admin, show);
+router.get("/:id", show);
 router.put("/:id", admin, update);
 router.delete("/:id", admin, destroy);
 
