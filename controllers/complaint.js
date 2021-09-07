@@ -3,14 +3,14 @@ import Complaint from "../models/complaint.js";
 import Amenity from "../models/amenity.js";
 import { validateCreate, validateUpdate } from "../requests/complaint.js";
 import { sendError } from "../helpers/response.js";
-import { findOrFail, filterIfUser } from "../helpers/db.js";
+import { findOrFail, filterIfResident } from "../helpers/db.js";
 import { getResponseFormat } from "../lib/utils.js";
 import redis from "../config/redis.js";
 
 export const index = async (req, res) => {
 	try {
 		const complaints = await Complaint.aggregate()
-			.match(filterIfUser(req))
+			.match(filterIfResident(req))
 			.lookup({
 				from: "amenities",
 				localField: "amenityId",

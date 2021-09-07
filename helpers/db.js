@@ -18,16 +18,22 @@ export const findOrFail = async (id, res, item_name, Schema) => {
 	return false;
 };
 
-export const filterIfUser = (req, userIdFieldName = "userId") => {
+export const filterForUser = (req, userIdFieldName = "userId") => {
+	if (!req || !req.authUser) throw Error("No authorised user");
+
+	return {
+		[userIdFieldName]: new mongoose.Types.ObjectId(req.authUser.id),
+	};
+};
+
+export const filterIfResident = (req, userIdFieldName = "userId") => {
 	let match = {};
 
 	if (!req || !req.authUser) throw Error("No authorised user");
 
 	// If is not admin then only show the user's complaints
 	if (!req.authUser.isAdmin) {
-		match = {
-			[userIdFieldName]: new mongoose.Types.ObjectId(req.authUser.id),
-		};
+		match = filterForUser(req, userIdFieldName);
 	}
 
 	return match;
