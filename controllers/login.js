@@ -1,4 +1,4 @@
-import { createToken, verifyToken } from "../config/firebaseAuth.js";
+import { createToken, verifyToken } from "../helpers/firebase.js";
 import { CUSTOM_API_CODES } from "../lib/constants.js";
 import { getResponseErrorFormat, getResponseFormat } from "../lib/utils.js";
 import User from "../models/user.js";

@@ -4,7 +4,7 @@ import requestConditions from "./config/requestConditions.js";
 import setupCloudinary from "./config/cloudinary.js";
 import intializeSubscribers from "./config/subscribers.js";
 import intializeRoutes from "./config/routes.js";
-import { initFirebaseAuth } from "./config/firebaseAuth.js";
+import { initFirebaseAuth } from "./config/firebase.js";
 import initRedis from "./config/redis.js";
 import Logger from "./lib/logging.js";
 

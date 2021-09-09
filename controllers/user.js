@@ -1,4 +1,5 @@
 import { getResponseErrorFormat, getResponseFormat } from "../lib/utils.js";
+import { firebaseDbRef } from "../config/firebase.js";
 import User from "../models/user.js";
 import { sendError } from "../helpers/response.js";
 import { findOrFail } from "../helpers/db.js";
@@ -46,7 +47,13 @@ export const store = async (req, res) => {
 
 		user = new User(body);
 		user = await user.save();
-		req.app.emit("amenities:cache");
+
+		if (user?._id) {
+			// Insert into firebase
+			await firebaseCollection().child(`${user._id}`).set(body);
+			// Update redis cache
+			req.app.emit("amenities:cache");
+		}
 
 		res.send(getResponseFormat(user, "Success"));
 	} catch (error) {
@@ -80,8 +87,14 @@ export const destroy = async (req, res) => {
 	try {
 		const user = await findOrFail(req.params.id, res, "user", User);
 		if (!user) return;
-		await User.findByIdAndRemove(user._id);
-		req.app.emit("amenities:cache");
+		const deletedUser = await User.findByIdAndRemove(user._id);
+
+		if (deletedUser?._id) {
+			// Delete from firebase
+			await firebaseCollection().child(`${user._id}`).remove();
+			// Update redis cache
+			req.app.emit("amenities:cache");
+		}
 
 		res.json(getResponseFormat(204, "User deleted successfully."));
 	} catch (error) {
@@ -132,23 +145,21 @@ const updateUser = async (req, res, userId) => {
 	const id = userId || req.params.id;
 
 	try {
-		let user = await User.findById(id);
-		if (!user) {
-			return res
-				.status(404)
-				.send(
-					getResponseErrorFormat(
-						"User with requested Id not found",
-						"400"
-					)
-				);
-		}
+		const user = await findOrFail(req.params.id, res, "user", User);
+		if (!user) return;
 
-		const newUser = validate(req, res);
-		const updatedUser = await User.findByIdAndUpdate(id, newUser, {
+		const body = validate(req, res);
+		if (!body) return;
+		const updatedUser = await User.findByIdAndUpdate(id, body, {
 			new: true,
 		});
-		req.app.emit("amenities:cache");
+
+		if (updatedUser?._id) {
+			// Update in firebase
+			await firebaseCollection().child(id).update(body);
+			// Update redis cache
+			req.app.emit("amenities:cache");
+		}
 
 		res.send(getResponseFormat(updatedUser, "Updated successfully"));
 	} catch (error) {
@@ -159,3 +170,5 @@ const updateUser = async (req, res, userId) => {
 export const updateCurrentUserProfile = async (req, res) => {
 	return await updateUser(req, res, req.authUser.id);
 };
+
+const firebaseCollection = () => firebaseDbRef().child("users");
