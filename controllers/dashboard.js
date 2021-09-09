@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import Complaint from "../models/complaint.js";
 import User from "../models/user.js";
 import { sendError } from "../helpers/response.js";
-import { getResponseFormat } from "../lib/utils.js";
+import { getResponseFormat, sortByDateKeys } from "../lib/utils.js";
 import { searchArrForObjVal } from "../helpers/array.js";
 import { getOrSetCache } from "../helpers/redis.js";
 import Logger from "../lib/logging.js";
@@ -20,9 +20,22 @@ export const show = async (req, res) => {
 			mostAvailedAmenities
 		);
 
+        const revenues = {}
+        const users = await User.find();
+        users.forEach( user => {
+            const { transactions  = [] } = user;
+            transactions.forEach(transaction => {
+                const { status, amount, paidMonth } = transaction;
+                if(status === 'success') {
+                    revenues[paidMonth] = (revenues[paidMonth] || 0) + amount; 
+                }
+            })
+        });
+        const sortedRevenues = sortByDateKeys(revenues);
+
 		return res
 			.status(200)
-			.json(getResponseFormat({ complaints, amenities }));
+			.json(getResponseFormat({ complaints, amenities, revenues: sortedRevenues }));
 	} catch (error) {
 		Logger.error(error);
 		return sendError(res, error);

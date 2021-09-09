@@ -2,7 +2,7 @@ import express from "express";
 import shortid from "shortid";
 import crypto from "crypto";
 import {
-	calculatePaymentAmountV2,
+	calculatePaymentAmount,
 	getResponseErrorFormat,
 	getResponseFormat,
 } from "../lib/utils.js";
@@ -20,7 +20,7 @@ router.get("/", [userAuth, resident], async (req, res) => {
 		const user = await User.findById(userId).populate("amenities");
 		const userObject = user.toObject();
 		const { createdAt, lastPaymentAt, amenities = [] } = userObject;
-		const paymentMeta = calculatePaymentAmountV2({
+		const paymentMeta = calculatePaymentAmount({
 			createdAt,
 			lastPaymentAt,
 			amenities,
