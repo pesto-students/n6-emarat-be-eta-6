@@ -42,7 +42,7 @@ export const store = async (req, res) => {
 		if (user) {
 			return res
 				.status(400)
-				.send(getResponseErrorFormat("Phone already exists", "400"));
+				.send(getResponseErrorFormat("User already exists", "400"));
 		}
 
 		user = new User(body);
@@ -55,7 +55,7 @@ export const store = async (req, res) => {
 			req.app.emit("amenities:cache");
 		}
 
-		res.send(getResponseFormat(user, "Success"));
+		res.send(getResponseFormat(user, "User Created Successfully!"));
 	} catch (error) {
 		sendError(res, error);
 	}
