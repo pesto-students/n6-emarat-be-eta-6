@@ -35,13 +35,23 @@ export const store = async (req, res) => {
 };
 
 export const show = async (req, res) => {
-	const amenity = await findOrFail(req.params.id, res, "amenity", Amenity);
+	const amenity = await findOrFail({
+        schemaId: req.params.id,
+        res,
+        context: "amenity",
+        schema: Amenity
+    });
 	if (amenity) res.json(getResponseFormat(amenity));
 };
 
 export const update = async (req, res, next) => {
 	const newAmenity = validate(req, res);
-	const oldAmenity = await findOrFail(req.params.id, res, "amenity", Amenity);
+	const oldAmenity = await findOrFail({
+        schemaId: req.params.id,
+        res,
+        context: "amenity",
+        schema: Amenity
+    });
 
 	if (!oldAmenity) return;
 
@@ -64,7 +74,12 @@ export const update = async (req, res, next) => {
 };
 
 export const destroy = async (req, res) => {
-	const amenity = await findOrFail(req.params.id, res, "amenity", Amenity);
+	const amenity = await findOrFail({
+        schemaId: req.params.id,
+        res,
+        context: "amenity",
+        schema: Amenity
+    });
 
 	if (!amenity) return;
 

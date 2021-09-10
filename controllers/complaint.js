@@ -60,12 +60,12 @@ export const store = async (req, res) => {
 	const newComplaint = new Complaint(complaint);
 
 	// Check if amenity exists
-	const amenity = await findOrFail(
-		complaint.amenityId,
+	const amenity = await findOrFail({
+		schemaId: complaint.amenityId,
 		res,
-		"amenity",
-		Amenity
-	);
+		context: "amenity",
+		schema: Amenity
+    });
 	if (!amenity) return;
 
 	// Check if user has that amenity
@@ -83,23 +83,23 @@ export const store = async (req, res) => {
 };
 
 export const show = async (req, res) => {
-	const complaint = await findOrFail(
-		req.params.id,
+	const complaint = await findOrFail({
+		schemaId: req.params.id,
 		res,
-		"complaint",
-		Complaint
-	);
+		context: "complaint",
+		schema: Complaint
+    });
 	if (complaint) res.json(getResponseFormat(complaint));
 };
 
 export const update = async (req, res, next) => {
 	const newComplaint = validateUpdate(req, res);
-	const oldComplaint = await findOrFail(
-		req.params.id,
+	const oldComplaint = await findOrFail({
+		schemaId: req.params.id,
 		res,
-		"complaint",
-		Complaint
-	);
+		context: "complaint",
+		schema: Complaint
+    });
 
 	if (!oldComplaint) return;
 
@@ -125,12 +125,12 @@ export const update = async (req, res, next) => {
 };
 
 export const destroy = async (req, res) => {
-	const complaint = await findOrFail(
-		req.params.id,
+	const complaint = await findOrFail({
+		schemaId: req.params.id,
 		res,
-		"complaint",
-		Complaint
-	);
+		context: "complaint",
+		schema: Complaint
+    });
 
 	if (!complaint) return;
 

@@ -80,12 +80,17 @@ export const show = async (req, res) => {
 };
 
 export const update = async (req, res) => {
-	return await updateUser(req, res);
+	return await updateUser({req, res, userId: req.params.id});
 };
 
 export const destroy = async (req, res) => {
 	try {
-		const user = await findOrFail(req.params.id, res, "user", User);
+		const user = await findOrFail({
+            schemaId: req.params.id,
+            res,
+            context: "user",
+            schema: User
+        });
 		if (!user) return;
 		const deletedUser = await User.findByIdAndRemove(user._id);
 
@@ -141,22 +146,26 @@ export const currentUserProfile = async (req, res) => {
 	}
 };
 
-const updateUser = async (req, res, userId) => {
-	const id = userId || req.params.id;
+const updateUser = async ({ req, res, userId }) => {
 
 	try {
-		const user = await findOrFail(req.params.id, res, "user", User);
+		const user = await findOrFail({
+            schemaId: userId,
+            res,
+            context: "user",
+            schema: User
+        });
 		if (!user) return;
 
 		const body = validate(req, res);
 		if (!body) return;
-		const updatedUser = await User.findByIdAndUpdate(id, body, {
+		const updatedUser = await User.findByIdAndUpdate(userId, body, {
 			new: true,
 		});
 
 		if (updatedUser?._id) {
 			// Update in firebase
-			await firebaseCollection().child(id).update(body);
+			await firebaseCollection().child(userId).update(body);
 			// Update redis cache
 			req.app.emit("amenities:cache");
 		}
@@ -168,7 +177,7 @@ const updateUser = async (req, res, userId) => {
 };
 
 export const updateCurrentUserProfile = async (req, res) => {
-	return await updateUser(req, res, req.authUser.id);
+	return await updateUser({ req, res, userId: req.authUser.id });
 };
 
 const firebaseCollection = () => firebaseDbRef().child("users");

@@ -13,9 +13,11 @@ export default async function (req, res, next) {
 
 	try {
 		const decodedToken = await verifyToken(token);
+        const { uniqueId, isAdmin, phone_number, phone } = decodedToken;
 		req.authUser = {
-			id: decodedToken.uniqueId,
-			isAdmin: decodedToken.isAdmin,
+			id: uniqueId,
+			isAdmin,
+            phone: phone_number || phone
 		};
 		next();
 	} catch (ex) {

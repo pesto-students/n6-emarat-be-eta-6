@@ -42,7 +42,7 @@ router.post("/order/", [userAuth, resident], async (req, res) => {
 		const user = await User.findById(userId).populate("amenities");
 		const userObject = user.toObject();
 		const { createdAt, lastPaymentAt, amenities = [] } = userObject;
-		const { pay, paymentMonth } = calculatePaymentAmountV2({
+		const { pay, paymentMonth } = calculatePaymentAmount({
 			createdAt,
 			lastPaymentAt,
 			amenities,

@@ -2,10 +2,10 @@ import mongoose from "mongoose";
 import { getResponseErrorFormat } from "../lib/utils.js";
 
 // Params : ObjectId, Express Router response, Name of item, Mongoose schema
-export const findOrFail = async (id, res, item_name, Schema) => {
-	if (mongoose.isValidObjectId(id)) {
+export const findOrFail = async ({ schemaId, res, context, schema }) => {
+	if (mongoose.isValidObjectId(schemaId)) {
 		try {
-			const item = await Schema.findById(id);
+			const item = await schema.findById(schemaId);
 			if (item) return item;
 		} catch (error) {
 			sendError(res, error);
@@ -13,7 +13,7 @@ export const findOrFail = async (id, res, item_name, Schema) => {
 	}
 
 	res.status(404).json(
-		getResponseErrorFormat(`No ${item_name} with id: ${id}`)
+		getResponseErrorFormat(`No ${context} with id: ${schemaId}`)
 	);
 	return false;
 };
