@@ -1,10 +1,8 @@
-import mongoose from "mongoose";
 import Amenity from "../models/amenity.js";
-import User from "../models/user.js";
 import validate from "../requests/amenity.js";
 import { sendError } from "../helpers/response.js";
 import { findOrFail } from "../helpers/db.js";
-import { getResponseFormat } from "../lib/utils.js";
+import { filterBasicAmenities, getResponseFormat } from "../lib/utils.js";
 
 export const index = async (req, res) => {
 	try {
@@ -12,7 +10,9 @@ export const index = async (req, res) => {
 			req.authUser.isAdmin ? { updatedAt: -1 } : { name: 1 }
 		);
 
-		res.status(200).json(getResponseFormat(amenities));
+        const { basic } = req.query;
+        const filteredAmenities = filterBasicAmenities(amenities, basic);
+		res.status(200).json(getResponseFormat(filteredAmenities));
 	} catch (error) {
 		sendError(res, error);
 	}
@@ -54,7 +54,7 @@ export const update = async (req, res, next) => {
     });
 
 	if (!oldAmenity) return;
-
+    
 	try {
 		const updatedAmenity = await Amenity.findByIdAndUpdate(
 			oldAmenity._id,

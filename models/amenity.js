@@ -27,6 +27,11 @@ const amenitySchema = new Schema(
 			maxlength: 200,
 			required: true,
 		},
+        type: {
+            type: String,
+            enum: ["flexible", "basic", "limited"],
+			default: "flexible",
+        }
 	},
 	{
 		timestamps: true,

@@ -5,12 +5,15 @@ import {
 	calculatePaymentAmount,
 	getResponseErrorFormat,
 	getResponseFormat,
+    filterBasicAmenities,
 } from "../lib/utils.js";
 import User from "../models/user.js";
+import Amenity from "../models/amenity.js";
 import { sendError } from "../helpers/response.js";
 import razorpay from "../config/razorpary.js";
 import userAuth from "../middleware/auth/user.js";
 import resident from "../middleware/auth/resident.js";
+
 
 const router = express.Router();
 
@@ -18,8 +21,11 @@ router.get("/", [userAuth, resident], async (req, res) => {
 	const { id: userId } = req.authUser;
 	try {
 		const user = await User.findById(userId).populate("amenities");
+        const allAmenities = await Amenity.find();
+        const basicAmenities = filterBasicAmenities(allAmenities, 'yes');
 		const userObject = user.toObject();
-		const { createdAt, lastPaymentAt, amenities = [] } = userObject;
+		const { createdAt, lastPaymentAt, amenities: userAmenities = [] } = userObject;
+        const amenities = [...userAmenities, ...basicAmenities];
 		const paymentMeta = calculatePaymentAmount({
 			createdAt,
 			lastPaymentAt,
@@ -40,8 +46,11 @@ router.post("/order/", [userAuth, resident], async (req, res) => {
 	const { id: userId } = req.authUser;
 	try {
 		const user = await User.findById(userId).populate("amenities");
+        const allAmenities = await Amenity.find();
+        const basicAmenities = filterBasicAmenities(allAmenities, 'yes');
 		const userObject = user.toObject();
-		const { createdAt, lastPaymentAt, amenities = [] } = userObject;
+		const { createdAt, lastPaymentAt, amenities: userAmenities = [] } = userObject;
+        const amenities = [...userAmenities, ...basicAmenities];
 		const { pay, paymentMonth } = calculatePaymentAmount({
 			createdAt,
 			lastPaymentAt,
