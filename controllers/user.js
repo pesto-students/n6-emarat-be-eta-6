@@ -37,7 +37,8 @@ export const store = async (req, res) => {
 	const body = validate(req, res);
 
 	try {
-		let user = await User.findOne({ phone: body.phone });
+        const { phone, flat } = body;
+		let user = await User.findOne({ $or: [ { phone }, { flat } ]  });
 
 		if (user) {
 			return res
@@ -159,6 +160,22 @@ const updateUser = async ({ req, res, userId }) => {
 
 		const body = validate(req, res);
 		if (!body) return;
+
+        const { phone, flat } = body;
+		let alreadyPresentuser = await User.findOne({ 
+            $or: [
+                { phone },
+                { flat }
+            ],
+            _id: {$ne: userId}
+        });
+
+		if (alreadyPresentuser) {
+			return res
+				.status(400)
+				.send(getResponseErrorFormat("User already exists", "400"));
+		}
+
 		const updatedUser = await User.findByIdAndUpdate(userId, body, {
 			new: true,
 		});
