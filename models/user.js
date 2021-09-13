@@ -1,7 +1,36 @@
-import Joi from "joi";
 import mongoose from "mongoose";
+import amenity from "./amenity.js";
 
 const Schema = mongoose.Schema;
+
+const transactionSchema = {
+    orderId: {
+        type: String,
+        required: true,
+        unique: true,
+    },
+    paidMonth: String,
+    amount: {
+        type: Number,
+        max: 99999,
+        min: 1,
+        required: true,
+    },
+    status: {
+        type: String,
+        enum: ['pending','success', 'failed'],
+        required: true,
+    },
+    paymentId: {
+        type: String,
+        maxlength: 200,
+        minlength: 5,
+    },
+    processedAt: {
+        type: Date,
+        default: Date.now,
+    },
+};
 
 const userSchema = new Schema({
 	isAdmin: {
@@ -47,54 +76,15 @@ const userSchema = new Schema({
 		default: Date.now,
 		required: true,
 	},
-	transcations: [
-		new Schema({
-			id: {
-				type: Schema.Types.ObjectId,
-				required: true,
-			},
-			paidFor: {
-				type: Date,
-			},
-			amount: {
-				type: Number,
-				max: 99999,
-				min: 1,
-				required: true,
-			},
-			status: {
-				type: String,
-				enum: ["S", "F"],
-				required: true,
-			},
-			rzpId: {
-				type: String,
-				maxlength: 200,
-				minlength: 5,
-			},
-			createdAt: {
-				type: Date,
-				default: Date.now,
-				required: true,
-			},
-		}),
-	],
-	amenties: [
+	transactions: [transactionSchema],
+	amenities: [
 		{
 			type: Schema.Types.ObjectId,
+			required: true,
+            ref: amenity
 		},
 	],
+    lastPaymentAt: String,
 });
 
-export const User = mongoose.model("User", userSchema);
-
-export const joiSchema = Joi.object({
-	isAdmin: Joi.bool(),
-	firstName: Joi.string().min(1).max(50).required(),
-	lastName: Joi.string().min(1).max(50).required(),
-	phone: Joi.string()
-		.regex(/^\d{10}$/)
-		.required(),
-	flat: Joi.string(),
-	picture: Joi.string(),
-});
+export default mongoose.model("User", userSchema);

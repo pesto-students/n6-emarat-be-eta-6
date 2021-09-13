@@ -1,5 +1,6 @@
 import Joi from "joi";
 import mongoose from "mongoose";
+import user from "./user.js";
 
 const Schema = mongoose.Schema;
 
@@ -26,6 +27,11 @@ const schema = new Schema({
 		default: Date.now,
 		required: true,
 	},
+    user: {
+        type: Schema.Types.ObjectId,
+        required: true,
+        ref: user
+    }
 });
 
 export const Broadcast = mongoose.model("Broadcast", schema);
