@@ -1,0 +1,61 @@
+{
+	"rules": {
+		".write": "auth != null && auth.token.uniqueId != null && root.child('users').child(auth.token.uniqueId).exists()",
+		".read": "auth != null && auth.token.uniqueId != null &&  root.child('users').child(auth.token.uniqueId).exists()",
+		"posts": {
+			".indexOn": ["createdAt"],
+			"$postId": {
+				".write": "auth.token.uniqueId == newData.child('userId').val()",
+				".validate": "newData.hasChildren(['userId', 'text', 'createdAt'])",
+				"userId": {
+					".validate": "newData.isString() && root.child('users').child(newData.val()).exists()"
+				},
+				"text": {
+					".validate": "newData.isString() && newData.val().length > 1 && newData.val().length < 500"
+				},
+				"picture": {
+					".validate": "newData.isString()"
+				},
+				"createdAt": {
+					".validate": "newData.isNumber()"
+				},
+				"$other": {
+					".validate": false
+				},
+				"reactions": {
+					"$reactedByUserId": {
+						".validate": "newData.hasChildren(['reaction', 'createdAt']) && auth.token.uniqueId == $reactedByUserId",
+						"reaction": {
+							".validate": "newData.isString() && (newData.val() == 'like' || newData.val() == 'laugh' || newData.val() == 'sad' || newData.val() == 'congrats')"
+						},
+						"createdAt": {
+							".validate": "newData.isNumber()"
+						}
+					}
+				}
+			}
+		},
+		"post-comments": {
+			".indexOn": ["createdAt"],
+			"$postId": {
+				".write": "auth.token.uniqueId == newData.child('userId').val()",
+				".validate": "root.child('posts').child($postId).exists()",
+				"$commentId": {
+					".validate": "newData.hasChildren(['userId', 'text', 'createdAt'])",
+					"userId": {
+						".validate": "newData.isString() && root.child('users').child(newData.val()).exists()"
+					},
+					"text": {
+						".validate": "newData.isString() && newData.val().length > 1 && newData.val().length < 500"
+					},
+					"createdAt": {
+						".validate": "newData.isNumber()"
+					},
+					"$other": {
+						".validate": false
+					}
+				}
+			}
+		}
+	}
+}
