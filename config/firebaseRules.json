@@ -5,7 +5,7 @@
 		"posts": {
 			".indexOn": ["createdAt"],
 			"$postId": {
-				".write": "auth.token.uniqueId == newData.child('userId').val()",
+				".write": "(data.exists() && data.child('userId').val() == auth.token.uniqueId) && (!data.exists() && newData.child('userId').val() == auth.token.uniqueId)",
 				".validate": "newData.hasChildren(['userId', 'text', 'createdAt'])",
 				"userId": {
 					".validate": "newData.isString() && root.child('users').child(newData.val()).exists()"
