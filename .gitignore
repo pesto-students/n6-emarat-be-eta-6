@@ -121,3 +121,6 @@ dist
 
 # Firebase private keys
 config/firebase-service-account-key.json
+
+# Ignore for heroku
+package-lock.json
