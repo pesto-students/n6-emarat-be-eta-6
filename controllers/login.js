@@ -41,6 +41,7 @@ const createTokenWithUserClaims = async (user) => {
         picture = "",
         phone,
         _id,
+        flat,
     } = _user;
 
     const uniqueId = `${_id}`;
@@ -53,6 +54,7 @@ const createTokenWithUserClaims = async (user) => {
             picture,
             phone,
             uniqueId,
+            flat,
         },
     });
     return authorizationToken;

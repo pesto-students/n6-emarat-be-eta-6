@@ -37,7 +37,8 @@ export const store = async (req, res) => {
 	const body = validate(req, res);
 
 	try {
-		let user = await User.findOne({ phone: body.phone });
+        const { phone, flat } = body;
+		let user = await User.findOne({ $or: [ { phone }, { flat } ]  });
 
 		if (user) {
 			return res
@@ -50,7 +51,8 @@ export const store = async (req, res) => {
 
 		if (user?._id) {
 			// Insert into firebase
-			await firebaseCollection().child(`${user._id}`).set(body);
+			const fbUser = filterUserForFb(body);
+			await firebaseCollection().child(`${user._id}`).set(fbUser);
 			// Update redis cache
 			req.app.emit("amenities:cache");
 		}
@@ -80,17 +82,17 @@ export const show = async (req, res) => {
 };
 
 export const update = async (req, res) => {
-	return await updateUser({req, res, userId: req.params.id});
+	return await updateUser({ req, res, userId: req.params.id });
 };
 
 export const destroy = async (req, res) => {
 	try {
 		const user = await findOrFail({
-            schemaId: req.params.id,
-            res,
-            context: "user",
-            schema: User
-        });
+			schemaId: req.params.id,
+			res,
+			context: "user",
+			schema: User,
+		});
 		if (!user) return;
 		const deletedUser = await User.findByIdAndRemove(user._id);
 
@@ -147,25 +149,41 @@ export const currentUserProfile = async (req, res) => {
 };
 
 const updateUser = async ({ req, res, userId }) => {
-
 	try {
 		const user = await findOrFail({
-            schemaId: userId,
-            res,
-            context: "user",
-            schema: User
-        });
+			schemaId: userId,
+			res,
+			context: "user",
+			schema: User,
+		});
 		if (!user) return;
 
 		const body = validate(req, res);
 		if (!body) return;
+
+        const { phone, flat } = body;
+		let alreadyPresentuser = await User.findOne({ 
+            $or: [
+                { phone },
+                { flat }
+            ],
+            _id: {$ne: userId}
+        });
+
+		if (alreadyPresentuser) {
+			return res
+				.status(400)
+				.send(getResponseErrorFormat("User already exists", "400"));
+		}
+
 		const updatedUser = await User.findByIdAndUpdate(userId, body, {
 			new: true,
 		});
 
 		if (updatedUser?._id) {
 			// Update in firebase
-			await firebaseCollection().child(userId).update(body);
+			const fbUser = filterUserForFb(body);
+			await firebaseCollection().child(userId).update(fbUser);
 			// Update redis cache
 			req.app.emit("amenities:cache");
 		}
@@ -178,6 +196,17 @@ const updateUser = async ({ req, res, userId }) => {
 
 export const updateCurrentUserProfile = async (req, res) => {
 	return await updateUser({ req, res, userId: req.authUser.id });
+};
+
+const filterUserForFb = (data) => {
+	const newData = { ...data };
+
+	delete newData.createdAt;
+	delete newData.updatedAt;
+	delete newData.transactions;
+	delete newData.amenities;
+
+	return newData;
 };
 
 const firebaseCollection = () => firebaseDbRef().child("users");

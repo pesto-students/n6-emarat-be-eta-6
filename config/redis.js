@@ -9,7 +9,7 @@ client.on("connect", () => Logger.debug(`Redis Connected`));
 
 client.on("error", (error) => {
 	Logger.error(`Redis connection error, error -> ${error.message}`);
-	process.exit(1);
+	// process.exit(1);
 });
 
 export default client;
