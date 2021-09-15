@@ -8,32 +8,35 @@ import { REDIS } from "../lib/constants.js";
 
 export const show = async (req, res) => {
 	try {
-		const complaintsC = await getOrSetCache(
-			REDIS.HOMEPAGE_COMPLAINTS,
+		const complaintsData = await getOrSetCache(
+			REDIS.DASHBOARD_COMPLAINTS,
 			complaintsDashboardData
 		);
-		const residentsC = await getOrSetCache(
-			REDIS.HOMEPAGE_RESIDENTS,
-			residentsCount
-		);
-		const amenitiesC = await await getOrSetCache(
-			REDIS.HOMEPAGE_AMENITIES,
-			amenitiesCount
-		);
 
-		const statsInit = {
-			residentsCount: complaintsC?.count?.resolved || 0,
-			complaintsResolved: residentsC || 0,
-			amenitiesCount: amenitiesC || 0,
+		const residentsCount =
+			(await getOrSetCache(
+				REDIS.HOMEPAGE_RESIDENTS,
+				getResidentsCount
+			)) || 0;
+		const amenitiesCount =
+			(await await getOrSetCache(
+				REDIS.HOMEPAGE_AMENITIES,
+				getAmenitiesCount
+			)) || 0;
+
+		const stats = {
+			residentsCount,
+			complaintsResolved: complaintsData?.count?.resolved || 0,
+			amenitiesCount,
 		};
 
-		return res.send(getResponseFormat(statsInit));
+		return res.send(getResponseFormat(stats));
 	} catch (error) {
 		return res.status(403).send(getResponseErrorFormat(error));
 	}
 };
 
-const residentsCount = async () => {
+export const getResidentsCount = async () => {
 	try {
 		return await User.countDocuments({
 			isAdmin: false,
@@ -43,7 +46,7 @@ const residentsCount = async () => {
 	}
 };
 
-const amenitiesCount = async () => {
+export const getAmenitiesCount = async () => {
 	try {
 		return await Amenity.countDocuments({});
 	} catch (error) {
