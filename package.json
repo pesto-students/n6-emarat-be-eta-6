@@ -24,13 +24,14 @@
 		"express": "^4.17.1",
 		"firebase-admin": "^9.11.0",
 		"formidable": "^1.2.2",
+		"helmet": "^4.6.0",
 		"ioredis": "^4.27.9",
 		"joi": "^17.4.2",
 		"mongoose": "^5.13.7",
+		"morgan": "^1.10.0",
 		"razorpay": "^2.0.6",
 		"shortid": "^2.2.16",
-		"winston": "^3.3.3",
-		"morgan": "^1.10.0"
+		"winston": "^3.3.3"
 	},
 	"devDependencies": {
 		"debug": "^4.3.2",
