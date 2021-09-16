@@ -15,7 +15,7 @@
     <li>
       <a href="#about-the-project">About The Project</a>
       <ul>
-        <li><a href="#built-with">Artefacts</a></li>
+        <li><a href="#artefacts">Artefacts</a></li>
         <li><a href="#schema-design">Schema Design</a></li>
         <li><a href="#built-with">Built With</a></li>
         <li><a href="#performance">Performance</a></li>
