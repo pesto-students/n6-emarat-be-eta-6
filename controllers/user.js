@@ -37,8 +37,8 @@ export const store = async (req, res) => {
 	const body = validate(req, res);
 
 	try {
-        const { phone, flat } = body;
-		let user = await User.findOne({ $or: [ { phone }, { flat } ]  });
+		const { phone, flat } = body;
+		let user = await User.findOne({ $or: [{ phone }, { flat }] });
 
 		if (user) {
 			return res
@@ -54,6 +54,7 @@ export const store = async (req, res) => {
 			const fbUser = filterUserForFb(body);
 			await firebaseCollection().child(`${user._id}`).set(fbUser);
 			// Update redis cache
+			req.app.emit("users:cache");
 			req.app.emit("amenities:cache");
 		}
 
@@ -100,6 +101,7 @@ export const destroy = async (req, res) => {
 			// Delete from firebase
 			await firebaseCollection().child(`${user._id}`).remove();
 			// Update redis cache
+			req.app.emit("users:cache");
 			req.app.emit("amenities:cache");
 		}
 
@@ -161,14 +163,11 @@ const updateUser = async ({ req, res, userId }) => {
 		const body = validate(req, res);
 		if (!body) return;
 
-        const { phone, flat } = body;
-		let alreadyPresentuser = await User.findOne({ 
-            $or: [
-                { phone },
-                { flat }
-            ],
-            _id: {$ne: userId}
-        });
+		const { phone, flat } = body;
+		let alreadyPresentuser = await User.findOne({
+			$or: [{ phone }, { flat }],
+			_id: { $ne: userId },
+		});
 
 		if (alreadyPresentuser) {
 			return res
@@ -185,6 +184,7 @@ const updateUser = async ({ req, res, userId }) => {
 			const fbUser = filterUserForFb(body);
 			await firebaseCollection().child(userId).update(fbUser);
 			// Update redis cache
+			req.app.emit("users:cache");
 			req.app.emit("amenities:cache");
 		}
 

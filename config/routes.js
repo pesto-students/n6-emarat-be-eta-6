@@ -1,3 +1,4 @@
+import homepage from "../routes/homepage.js";
 import auth from "../routes/auth.js";
 import users from "../routes/user.js";
 import amenity from "../routes/amenity.js";
@@ -14,6 +15,7 @@ import admin from "../middleware/auth/admin.js";
 export default (app) => {
 	app.use("/", auth);
 	app.post("/upload", uploadImage);
+	app.use("/api/home", homepage);
 	app.use("/api/users", userAuth, users);
 	app.use("/api/amenities", userAuth, amenity);
 	app.use("/api/broadcasts", userAuth, broadcasts);
