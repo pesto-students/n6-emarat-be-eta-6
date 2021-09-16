@@ -55,8 +55,8 @@
 	<img src="https://res.cloudinary.com/emarat/image/upload/v1631804413/emarat-schema_gk9kuh.png">
 </a>
 
-Primary DB : MongoDB
-Social Feeds : Firebase Realtime Database
+#### Primary DB : MongoDB
+#### Social Feeds : Firebase Realtime Database
 
 ## Built With
 
