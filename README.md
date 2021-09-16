@@ -56,6 +56,7 @@
 </a>
 
 #### Primary DB : MongoDB
+
 #### Social Feeds : Firebase Realtime Database
 
 ## Built With
@@ -117,6 +118,16 @@ On client-side, JWT tokens are stored in the browser's local storage and not in 
 ### Other Common HTTP headers vulnerabilities
 
 [Helmet JS](https://github.com/helmetjs/helmet) is used to protect from some well-known web vulnerabilities by setting HTTP headers appropriately.
+
+### Firebase
+
+Social feed data comes from firebase. Strict rules are written for it :
+
+-   Only logged in users can view or add social feed's post/comment.
+-   Data validation for add/update is done.
+-   Only residents who own the post/comment or admin can delete it.
+
+A copy of these rules can be found on this [location](https://github.com/pesto-students/n6-emarat-be-eta-6/blob/master/config/firebaseRules.json).
 
 ## Getting Started
 
