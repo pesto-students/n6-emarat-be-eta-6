@@ -5,13 +5,14 @@ import User from "../models/user.js";
 
 export const loginOrRefreshToken = async(req, res) => {
     const { phone, id } = req.authUser;
+    const countryCode = process.env.COUNTRY_CODE || '+91';
 
 	try {
         let user;
         if(id) {
             user = await User.findById(id);
         } else {
-            const _phone = phone.split("+91")[1];
+            const _phone = phone.split(countryCode)[1];
             user = await User.findOne({ phone: _phone });
         }
 		if (!user) return returnInvalidTokenErr(res);
