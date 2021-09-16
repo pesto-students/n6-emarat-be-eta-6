@@ -122,8 +122,8 @@ On client-side, JWT tokens are stored in the browser's local storage and not in 
 
 #### Prerequisites
 
-`Node JS`
-`NPM`
+-   Node JS
+-   NPM
 
 #### 1. Clone the project from github
 
