@@ -3,7 +3,7 @@
 </p>
 <h1 align="center">Emarat</h1>
 
-<p align="center">The perfect solution to make living in an residential society a pleasant and convenient experience - for the residents and management. Pay monthly maintenance fees, complaints resolution, public announcements system, social feeds and more.</p>
+<p align="center">The perfect solution to make living in a residential society a pleasant and convenient experience - for the residents and management. Pay monthly maintenance fees, complaints resolution, public announcements system, social feeds and more.</p>
 
 <h3 align="center">
 	<a href="https://e-marat.netlify.app/">Live URL</a>
@@ -49,7 +49,7 @@
     <a href="https://drive.google.com/file/d/1VhLwtQEiYDabaPfq7dHEWbr2DseD71Ce/view?usp=sharing">Wireframes</a>
 </p>
 
-### Schema Design
+## Schema Design
 
 <a href="https://res.cloudinary.com/emarat/image/upload/v1631804413/emarat-schema_gk9kuh.png">
 	<img src="https://res.cloudinary.com/emarat/image/upload/h_400/v1631804413/emarat-schema_gk9kuh.png" height="400">
@@ -58,7 +58,7 @@
 Primary DB : MongoDB
 Social Feeds : Firebase Realtime Database
 
-### Built With
+## Built With
 
 <p align="center">
 	<a href="http://nodejs.org/">
@@ -87,35 +87,36 @@ Social Feeds : Firebase Realtime Database
 
 ## Performance
 
--   Queries to database are minimised and as few queries are made to database as possible.
+-   Queries to the database are minimised and as few queries are made as possible.
 -   Image storage and other operations are handled by external systems to avoid system load.
 
 ### Caching
 
-Wherver there are complicated large MongoDB queries are done, caching is done through redis. This results in faster data retrieval. Whenever MongoDB data is changed (which could result in stale cache), an event is emitted and this event is listened to by the caching system, and recaching is done.
+-   Wherever there are complicated large MongoDB queries, caching is done through redis. This results in faster data retrieval. We were able to reduce admin dashboard api call response time from `1100ms` to `90ms` by using this method.
+-   Whenever MongoDB data is changed (which could result in stale cache), an event is emitted and this event is listened to by the caching system, and recaching is done.
 
 ## Security
 
 ### Authentication
 
-Firebase phone auth method is used to send OTP by which user's phone number is verified, it is matched with the users record in MongoDB and if users exists then user is authenticated.
+Firebase phone auth method is used to send OTP by which the user's phone number is verified, it is matched with the users record in MongoDB and if user exists then the user is authenticated.
 
 ### Validation of User Input
 
--   Every user input is treated as unsafe and is validated for length, type, etc by using joi library.
+-   Every user input is treated as unsafe and is validated for length, type, etc by using the joi library.
 -   Input of user's id is never taken from client, rather server determines it by looking at authenticated user's JWT token.
 
 ### XSS
 
-The [X-XSS-Protection header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-XSS-Protection) is sent by the server on each response, while on front-end ReactJS's [dangerouslySetInnerHTML](https://reactjs.org/docs/dom-elements.html#dangerouslysetinnerhtml) is never used.
+The [X-XSS-Protection header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-XSS-Protection) usually sent by the server, is set to 0, while on front-end ReactJS's [dangerouslySetInnerHTML](https://reactjs.org/docs/dom-elements.html#dangerouslysetinnerhtml) is never used.
 
 ### CSRF
 
-On client side JWT tokens are stored in browser's local storage and not in cookies.
+On client-side, JWT tokens are stored in the browser's local storage and not in cookies.
 
 ### Other Common HTTP headers vulnerabilities
 
-[https://github.com/helmetjs/helmet](Helmet) is used to protect from some well-known web vulnerabilities by setting HTTP headers appropriately.
+[Helmet JS](https://github.com/helmetjs/helmet) is used to protect from some well-known web vulnerabilities by setting HTTP headers appropriately.
 
 ## Getting Started
 
