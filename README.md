@@ -52,7 +52,7 @@
 ## Schema Design
 
 <a href="https://res.cloudinary.com/emarat/image/upload/v1631804413/emarat-schema_gk9kuh.png">
-	<img src="https://res.cloudinary.com/emarat/image/upload/h_400/v1631804413/emarat-schema_gk9kuh.png" height="400">
+	<img src="https://res.cloudinary.com/emarat/image/upload/v1631804413/emarat-schema_gk9kuh.png">
 </a>
 
 Primary DB : MongoDB
