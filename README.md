@@ -1,5 +1,5 @@
 <p align="center">
-	<img src="https://res.cloudinary.com/emarat/image/upload/v1630505506/logo.svg" width="150" align="center">
+	<img src="https://res.cloudinary.com/emarat/image/upload/v1630505506/logo.svg" width="120" align="center">
 </p>
 <h1 align="center">Emarat</h1>
 
