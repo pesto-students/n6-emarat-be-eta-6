@@ -19,7 +19,7 @@ router.get("/", index);
 router.get("/current/amenities", resident, currentUserAmenities);
 
 router.get("/current/profile", currentUserProfile);
-router.put("/current/profile", resident, updateCurrentUserProfile);
+router.put("/current/profile", updateCurrentUserProfile);
 
 router.post("/", admin, store);
 
