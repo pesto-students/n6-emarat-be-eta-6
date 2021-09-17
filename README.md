@@ -1,7 +1,7 @@
 <p align="center">
 	<img src="https://res.cloudinary.com/emarat/image/upload/v1630505506/logo.svg" width="120" align="center">
 </p>
-<h1 align="center">Emarat</h1>
+<h1 align="center">Emarat Backend</h1>
 
 <p align="center">The perfect solution to make living in a residential society a pleasant and convenient experience - for the residents and management. Pay monthly maintenance fees, complaints resolution, public announcements system, social feeds and more.</p>
 
@@ -48,6 +48,10 @@
 	&nbsp;&nbsp;&nbsp;&nbsp;
     <a href="https://drive.google.com/file/d/1VhLwtQEiYDabaPfq7dHEWbr2DseD71Ce/view?usp=sharing">Wireframes</a>
 </p>
+
+## Frontend Repo
+
+[Frontend Repo](https://github.com/pesto-students/n6-emarat-fe-eta-6/)
 
 ## Schema Design
 
@@ -155,6 +159,11 @@ Make a new file named `.env` in the folder `config` and paste the contents of [t
 ### 6. Start the server
 
 `npm run dev`
+
+### Credentials
+
+*To login in the app as admin use no. 9999999999 and otp 123456*  
+*To login in the app as resident use no. 8888888888 and otp 123456*  
 
 ## Contributors
 
