@@ -67,26 +67,26 @@
 
 <p align="center">
 	<a href="http://nodejs.org/">
-		<img src="https://res.cloudinary.com/emarat/image/upload/h_150/v1631803785/node-logo_jjvktb.png" height="100">
+		<img src="https://res.cloudinary.com/emarat/image/upload/h_150/v1631803785/node-logo_jjvktb.png" title="Node JS" height="100">
 	</a>
 	<a href="https://expressjs.com/">
-		<img src="https://res.cloudinary.com/emarat/image/upload/h_150/v1631803785/express-logo_rtu2k4.png" height="100">
+		<img src="https://res.cloudinary.com/emarat/image/upload/h_150/v1631803785/express-logo_rtu2k4.png" title="Express JS" height="100">
 	</a>
 	<a href="https://www.mongodb.com/">
-		<img src="https://res.cloudinary.com/emarat/image/upload/h_150/v1631803785/mongoDB-logo_sv71ad.png" height="100">
+		<img src="https://res.cloudinary.com/emarat/image/upload/h_150/v1631803785/mongoDB-logo_sv71ad.png" title="MongoDB" height="100">
 	</a>
 	&nbsp;&nbsp;&nbsp;&nbsp;
 	<a href="https://redis.io/">
-		<img src="https://res.cloudinary.com/emarat/image/upload/h_150/v1631803785/redis-logo_ovuew1.png" height="100">
+		<img src="https://res.cloudinary.com/emarat/image/upload/h_150/v1631803785/redis-logo_ovuew1.png" title="Redis" height="100">
 	</a>
 	<a href="https://firebase.google.com/">
-		<img src="https://res.cloudinary.com/emarat/image/upload/h_150/v1631803785/firebase-logo_v8dzdj.png" height="100">
+		<img src="https://res.cloudinary.com/emarat/image/upload/h_150/v1631803785/firebase-logo_v8dzdj.png" title="Firebase" height="100">
 	</a>
 	<a href="https://razorpay.com/">
-		<img src="https://res.cloudinary.com/emarat/image/upload/h_150/v1631811211/Razorpay-logo_bzojzt.png" height="100">
+		<img src="https://res.cloudinary.com/emarat/image/upload/h_150/v1631811211/Razorpay-logo_bzojzt.png" title="Razorpay Payment Gateway" height="100">
 	</a>
 	<a href="https://www.heroku.com/">
-		<img src="https://res.cloudinary.com/emarat/image/upload/h_150/v1631803784/heroku-logo_dvjrgt.png" height="100">
+		<img src="https://res.cloudinary.com/emarat/image/upload/h_150/v1631803784/heroku-logo_dvjrgt.png" title="Heroku" height="100">
 	</a>
 </p>
 
