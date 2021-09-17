@@ -31,11 +31,14 @@
 
 ## About The Project
 
-<p>
-	<a href="https://res.cloudinary.com/emarat/image/upload/v1631802213/homepage-screenshot_n2dxwk.png">
-		<img src="https://res.cloudinary.com/emarat/image/upload/v1631802213/homepage-screenshot_n2dxwk.png">
-	</a>
-</p>
+[<img src="https://res.cloudinary.com/emarat/image/upload/v1631802213/homepage-screenshot_n2dxwk.png">](https://res.cloudinary.com/emarat/image/upload/v1631802213/homepage-screenshot_n2dxwk.png)
+
+Most Resident Welfare Association (RWAs) and cooperative societies rely on physical methods
+to solve resident problems and to collect maintenance fees which is quite a tedious task and
+lacks clarity and status tracking. With E-Marat, we are providing digital solutions for all the
+society issues at one place. This will include payments tracking, complaints resolving, and
+public announcements system. We will also provide a Social space platform for residents to
+become acquainted with others by posting stories and sharing their thoughts.
 
 ## Artefacts
 
