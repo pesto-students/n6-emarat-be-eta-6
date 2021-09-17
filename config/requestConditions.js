@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import helmet from "helmet";
 import morganMiddleware from "../middleware/morganMiddleware.js";
 
 export default (app) => {
@@ -19,6 +20,8 @@ export default (app) => {
 		cors({ exposedHeaders: "Authorization", origin: true }),
 
 		cookieParser(appKey),
+
+		helmet(),
 
 		morganMiddleware //HTTP request logger middleware for node.js
 	);
