@@ -47,6 +47,9 @@ router.get("/", async (req, res) => {
 				});
 			});
 		});
+		allTransactions.sort((transaction1, transaction2) => {
+			return new Date(transaction2.processedAt) - new Date(transaction1.processedAt);
+		});
 		return res.send(getResponseFormat(allTransactions));
 	} catch (err) {
 		return sendError(res, err);
