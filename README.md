@@ -49,7 +49,9 @@ become acquainted with others by posting stories and sharing their thoughts.
 	&nbsp;&nbsp;&nbsp;&nbsp;
 	<a href="https://drive.google.com/file/d/1YabDlAU6MeRzFvw3qotHrL2CxlqkCiEA/view?usp=sharing">One Pager</a>
 	&nbsp;&nbsp;&nbsp;&nbsp;
-    <a href="https://drive.google.com/file/d/1VhLwtQEiYDabaPfq7dHEWbr2DseD71Ce/view?usp=sharing">Wireframes</a>
+	<a href="https://drive.google.com/file/d/1VhLwtQEiYDabaPfq7dHEWbr2DseD71Ce/view?usp=sharing">Wireframes</a>
+	&nbsp;&nbsp;&nbsp;&nbsp;
+	<a href="https://drive.google.com/file/d/1rL3K0NTI91a6QQmy0J6BE9FFQSvwDgVY/view?usp=sharing">Coding Practices</a>
 </p>
 
 ## Frontend Repo
@@ -93,48 +95,9 @@ become acquainted with others by posting stories and sharing their thoughts.
 	</a>
 </p>
 
-## Performance
+### Performance, Security, Caching, etc
 
--   Queries to the database are minimised and as few queries are made as possible.
--   Image storage and other operations are handled by external systems to avoid system load.
-
-### Caching
-
--   Wherever there are complicated large MongoDB queries, caching is done through redis. This results in faster data retrieval. We were able to reduce admin dashboard api call response time from `1100ms` to `90ms` by using this method.
--   Whenever MongoDB data is changed (which could result in stale cache), an event is emitted and this event is listened to by the caching system, and recaching is done.
-
-## Security
-
-### Authentication
-
-Firebase phone auth method is used to send OTP by which the user's phone number is verified, it is matched with the users record in MongoDB and if user exists then the user is authenticated.
-
-### Validation of User Input
-
--   Every user input is treated as unsafe and is validated for length, type, etc by using the joi library.
--   Input of user's id is never taken from client, rather server determines it by looking at authenticated user's JWT token.
-
-### XSS
-
-The [X-XSS-Protection header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-XSS-Protection) usually sent by the server, is set to 0, while on front-end ReactJS's [dangerouslySetInnerHTML](https://reactjs.org/docs/dom-elements.html#dangerouslysetinnerhtml) is never used.
-
-### CSRF
-
-On client-side, JWT tokens are stored in the browser's local storage and not in cookies.
-
-### Other Common HTTP headers vulnerabilities
-
-[Helmet JS](https://github.com/helmetjs/helmet) is used to protect from some well-known web vulnerabilities by setting HTTP headers appropriately.
-
-### Firebase
-
-Social feed data comes from firebase. Strict rules are written for it :
-
--   Only logged in users can view or add post/comment.
--   Data validation for all add/update is done.
--   Only residents who own the post/comment or admin can delete it.
-
-A copy of these rules can be found on this [location](https://github.com/pesto-students/n6-emarat-be-eta-6/blob/master/config/firebaseRules.json).
+Please read our [coding practices doc](https://drive.google.com/file/d/1rL3K0NTI91a6QQmy0J6BE9FFQSvwDgVY/view?usp=sharing) for complete details on these.
 
 ## Getting Started
 
