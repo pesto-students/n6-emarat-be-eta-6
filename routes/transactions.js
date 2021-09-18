@@ -22,10 +22,11 @@ router.get("/", async (req, res) => {
 			const userDetailsObj = userDetails.toObject();
 			const {
 				transactions = [],
-				phone,
 				firstName,
 				lastName,
 				picture,
+				phone,
+				flat,
 			} = userDetailsObj;
 			transactions.forEach((transaction) => {
 				const { paidMonth, status } = transaction;
@@ -36,10 +37,11 @@ router.get("/", async (req, res) => {
 				}
 				allTransactions.push({
 					...transaction,
-					phone,
 					firstName,
 					lastName,
 					picture,
+					phone,
+					flat,
 					month,
 					name: `${firstName} ${lastName}`,
 				});
