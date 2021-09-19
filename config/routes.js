@@ -11,9 +11,11 @@ import transactions from "../routes/transactions.js";
 import httpError from "../middleware/httpError.js";
 import userAuth from "../middleware/auth/user.js";
 import admin from "../middleware/auth/admin.js";
+import isRegistered from "../routes/isRegistered.js";
 
 export default (app) => {
 	app.use("/", auth);
+	app.use("/isRegistered", isRegistered);
 	app.post("/upload", uploadImage);
 	app.use("/api/home", homepage);
 	app.use("/api/users", userAuth, users);
