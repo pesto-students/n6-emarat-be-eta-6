@@ -62,10 +62,10 @@ const createTokenWithUserClaims = async (user) => {
 }
 
 export const mockLogin = async(req, res) => {
-    const { type } = req.body;
-    const phone = type === 'admin' ? '9999999999' : '8888888888';
+    const { role } = req.body;
+    const isAdmin = role === 'admin';
     try {
-        const user = await User.findOne({ phone });
+        const user = await User.findOne({ isAdmin });
     if (!user) return returnInvalidTokenErr(res);
 		const authorizationToken = await createTokenWithUserClaims(user);
         return res.set(RESPONSE_HEADER_TOKEN, authorizationToken ).send(getResponseFormat());
